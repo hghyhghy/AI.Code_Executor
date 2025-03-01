@@ -20,6 +20,7 @@ model User{
   email String @unique
   password String
   executionHistories ExecutionHistory[]
+  folders Folder[]
 
 
   
@@ -36,4 +37,24 @@ model ExecutionHistory {
   
   // Relationship with User (Assuming you have a User model)
   user User @relation(fields: [userId], references: [id])
+}
+
+model Folder{
+
+  id Int @id @default(autoincrement())
+  name String @unique
+  userId Int
+  files File[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model File{
+
+  id Int @id @default(autoincrement())
+  name String
+  content String @db.Text()
+  folderId Int
+  folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  @@unique([name, folderId]) // Ensure file names are unique inside a folder
 }
