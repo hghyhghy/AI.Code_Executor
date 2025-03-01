@@ -34,6 +34,6 @@ export class FolderService {
 
         const folderPath =  join(this.storagePath,folder.name)
         fs.removeSync(folderPath)
-        return this.prisma.folder.delete({where:{id:folderId}})
+        return this.prisma.folder.deleteMany({where:{id:folderId,userId}})
     }
 }
