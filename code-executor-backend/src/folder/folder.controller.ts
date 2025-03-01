@@ -41,21 +41,27 @@ export class FolderController {
         }
     }
 
-    @Delete(':folderId')
-    async deleteFolder(@Req() req:Request, @Param('folderId') folderId:number){
-        
+    @Delete('delete/:folderId')
+    // remenber parameter is always a string
+    async deleteFolder(@Req() req: Request, @Param('folderId') folderId: string) {
         try {
-
-            const userId =  (req.user as any)?.id
-            const deleted =  await this.folderService.deleteFolder(folderId,userId)
+            const userId = (req.user as any)?.id;
+            const id = parseInt(folderId, 10); // Convert folderId to number
+    
+            if (isNaN(id)) {
+                throw new HttpException('Invalid folder ID', HttpStatus.BAD_REQUEST);
+            }
+    
+            const deleted = await this.folderService.deleteFolder(id, userId);
             if (!deleted) throw new HttpException('Folder not found', HttpStatus.NOT_FOUND);
+    
             return { message: 'Folder deleted successfully' };
-        } 
-        catch (error) {
+        } catch (error) {
+            console.error(error);
             throw new HttpException('Folder deletion failed', HttpStatus.BAD_REQUEST);
-
         }
     }
+    
 
 }
 

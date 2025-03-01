@@ -27,13 +27,29 @@ export class FolderService {
             }
         })
     }
-
-    async deleteFolder(folderId:number,userId:number){
-        const folder  =  await this.prisma.folder.findUnique({where:{id:folderId}})
-        if (!folder) throw new NotFoundException('Folder not found');
-
-        const folderPath =  join(this.storagePath,folder.name)
-        fs.removeSync(folderPath)
-        return this.prisma.folder.deleteMany({where:{id:folderId,userId}})
+    async deleteFolder(folderId: number, userId: number) {
+        console.log('Folder ID:', folderId); // Log folder ID
+        console.log('User ID:', userId); // Log user ID
+    
+        const folder = await this.prisma.folder.findUnique({
+            where: { id: folderId, userId },
+        });
+    
+        console.log('Folder found:', folder); // Log folder data
+    
+        if (!folder) {
+            console.log('Folder not found!');
+            return null;
+        }
+    
+        const folderPath = join(this.storagePath, folder.name);
+        console.log('Deleting folder at:', folderPath);
+    
+        fs.removeSync(folderPath); 
+    
+        return this.prisma.folder.delete({
+            where: { id: folderId },
+        });
     }
+    
 }
