@@ -37,4 +37,9 @@ export class ExecuteService {
             orderBy:{createdAt:'desc'}
         })
     }
+
+    async  suggestCode(language:string,currentCode:string){
+        return await this.geminiService.suggestCode(language,currentCode)
+
+    }
 }
