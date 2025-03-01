@@ -21,4 +21,11 @@ export class ExecuteController {
         const userId = (req.user as any)?.id
         return this.executeService.getExecutionHistory(userId)
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('suggest')
+
+    async suggestCode(@Body() body:{language:string,currentCode:string}){
+        return this.executeService.suggestCode(body.language,body.currentCode)
+    }
 }
