@@ -30,7 +30,7 @@ export default function AuthForm({ type }: { type: "login" | "register" }) {
 
       localStorage.setItem("token", res.data.access_token);
       toast.success(type === "login" ? "Login successful!" : "Registration successful!");
-      router.push("/main");
+      router.push("/execute");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Something went wrong.");
     } finally {
@@ -122,11 +122,11 @@ export default function AuthForm({ type }: { type: "login" | "register" }) {
       <div className="w-1/2 h-full flex items-center justify-center bg-gray-100 p-8">
         <div className="text-center animate-slideInRight">
           <h1 className="text-5xl font-bold text-gray-800 mb-4">
-            Welcome to <span className="text-blue-600">Resume.in</span>
+            Welcome to <span className="text-blue-600">Code.Editor</span>
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl">
-            Find and create your <span className="text-blue-600 font-medium">job-ready</span> resume in minutes.
-            Choose from professional templates, add your details, and make a lasting impression.
+            Run and Debug  your <span className="text-blue-600 font-medium">Code </span> with us  in minutes.
+            Choose from Languages and  import Your code to start over
           </p>
         </div>
       </div>
