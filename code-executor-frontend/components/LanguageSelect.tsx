@@ -19,7 +19,7 @@ const LanguageSelect:React.FC<Props> = ({language,setLanguage}) => {
             onChange={(e) =>  setLanguage(e.target.value)}
             >
                 <option value="python">Python</option>
-                <option value="javascript"> Javascript(Node.js) </option>
+                <option value="javascript"> Javascript </option>
                 <option value="go">Go </option>
 
             </select>
