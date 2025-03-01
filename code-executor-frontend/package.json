@@ -12,11 +12,16 @@
     "@monaco-editor/react": "^4.7.0",
     "axios": "^1.8.1",
     "monaco-editor": "^0.52.2",
+    "monaco-editor-core": "^0.52.2",
+    "monaco-languageclient": "^9.4.0",
     "next": "15.2.0",
+    "pyright": "^1.1.396",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "vscode-jsonrpc": "^8.2.1",
+    "vscode-languageserver-protocol": "^3.17.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
