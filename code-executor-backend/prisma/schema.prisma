@@ -31,7 +31,7 @@ model ExecutionHistory {
   userId    Int      // Store the ID of the user who executed the code
   code      String   // The executed code
   language  String   // Programming language (Python, Node.js, Go)
-  output    String   // Output from the execution
+  output    String  @db.Text()  // Output from the execution // Increase column size to TEXT
   createdAt DateTime @default(now())
   
   // Relationship with User (Assuming you have a User model)

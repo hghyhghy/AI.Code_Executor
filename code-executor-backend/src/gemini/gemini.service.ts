@@ -32,5 +32,23 @@ export class GeminiService {
         }
     }
 
+    async  suggestCode(language:string, currentCode:string):Promise<string>{
+        try {
+
+            const model = this.genAI.getGenerativeModel({model:"gemini-1.5-pro-002"})
+            const prompt = `The user is writing code in ${language}. Here is their current code:
+
+            ${currentCode}
+
+            They are stuck and need help completing or improving it. Provide a relevant suggestion.`;
+            const result  = await  model.generateContent(prompt)
+            return result.response.text()
+            
+        } catch (error) {
+            console.error("Gemini API error:", error);
+            return "Error generating code suggestion";
+        }
+    }
+
     
 }
