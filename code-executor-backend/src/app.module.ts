@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { ExecuteModule } from './execute/execute.module';
+import { GeminiService } from './gemini/gemini.service';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, ExecuteModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, GeminiService],
 })
 export class AppModule {}

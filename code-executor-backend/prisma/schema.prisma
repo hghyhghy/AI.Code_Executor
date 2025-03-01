@@ -19,5 +19,21 @@ model User{
   name String @unique
   email String @unique
   password String
+  executionHistories ExecutionHistory[]
+
+
   
+}
+
+model ExecutionHistory {
+
+  id        Int      @id @default(autoincrement()) // Auto-incrementing integer ID
+  userId    Int      // Store the ID of the user who executed the code
+  code      String   // The executed code
+  language  String   // Programming language (Python, Node.js, Go)
+  output    String   // Output from the execution
+  createdAt DateTime @default(now())
+  
+  // Relationship with User (Assuming you have a User model)
+  user User @relation(fields: [userId], references: [id])
 }
