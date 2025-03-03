@@ -6,6 +6,11 @@ import LanguageSelect from './LanguageSelect';
 import { RxResume } from "react-icons/rx";
 import { VscCopilot } from "react-icons/vsc";
 
+type CodeEditorProps = {
+    folderId?: number; // Optional: Can be undefined if no folder is selected
+    folderName?: string; // Added folder name for better UI
+};
+
 const defaultCode = {
     python: "print('Hello, World!')",
     javascript: "console.log('Hello, World!');",
@@ -15,12 +20,11 @@ import "fmt"
 
 func main() {
     fmt.Println("Hello, World!")
-}`,
-} as const;
+}`};
 
 type Language = keyof typeof defaultCode;
 
-const CodeEditor = () => {
+const CodeEditor = ({ folderId, folderName }: CodeEditorProps) => {
     const [language, setLanguage] = useState<Language>("python");
     const [code, setCode] = useState<string>(defaultCode[language]);
     const [output, setOutput] = useState<string>("");
@@ -33,7 +37,6 @@ const CodeEditor = () => {
     useEffect(() => {
         if (!monaco) return;
 
-        // Enable IntelliSense for JavaScript/TypeScript
         monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
             noSemanticValidation: false,
             noSyntaxValidation: false,
@@ -44,7 +47,6 @@ const CodeEditor = () => {
             allowNonTsExtensions: true,
         });
 
-        // Register language features
         monaco.languages.register({ id: "python" });
         monaco.languages.register({ id: "go" });
 
@@ -63,7 +65,6 @@ const CodeEditor = () => {
             });
         };
 
-        // Python suggestions
         registerCompletions("python", [
             { label: "print", kind: monaco.languages.CompletionItemKind.Function, insertText: "print()" },
             { label: "for loop", kind: monaco.languages.CompletionItemKind.Snippet, insertText: "for i in range():\n\t" },
@@ -72,7 +73,6 @@ const CodeEditor = () => {
             { label: "len()", kind: monaco.languages.CompletionItemKind.Function, insertText: "len()" },
         ]);
 
-        // Go suggestions
         registerCompletions("go", [
             { label: "fmt.Println", kind: monaco.languages.CompletionItemKind.Function, insertText: "fmt.Println()" },
             { label: "for loop", kind: monaco.languages.CompletionItemKind.Snippet, insertText: "for i := 0; i < n; i++ {\n\t\n}" },
@@ -91,10 +91,12 @@ const CodeEditor = () => {
     };
 
     return (
-        <div className="w-[90%] mx-auto mt-10 p-4 bg-gray-900 text-white rounded-lg shadow-lg flex flex-col">
+        <div className="w-[120%] mx-auto  mt-10 p-4 bg-gray-900 text-white rounded-lg shadow-lg flex flex-col">
+            {/* Folder Name Display */}
+
+
             {/* Language Selector */}
             <LanguageSelect language={language} setLanguage={(lang) => setLanguage(lang as "python" | "javascript" | "go")} />
-
 
             {/* Buttons */}
             <div className="flex gap-3 mt-1 mb-4">
