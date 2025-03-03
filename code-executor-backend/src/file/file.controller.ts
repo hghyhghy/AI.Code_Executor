@@ -23,9 +23,9 @@ export class FileController {
     constructor(private  readonly fileService:FileService){}
 
     @Post('create')
-    async createFile( @Req() req:Request , @Body() body:{folderId:number, name:string,content:string}){
+    async createFile( @Req() req:Request , @Body() body:{folderId:number, name:string ,content:string}){
         const userId = (req.user as any)?.id;
-        if (!body.folderId || !body.name || !body.content) {
+        if (!body.folderId || !body.name) {
             throw new HttpException('Missing required fields', HttpStatus.BAD_REQUEST);
           }
         return  this.fileService.createFile(userId,body.folderId,body.name,body.content)
