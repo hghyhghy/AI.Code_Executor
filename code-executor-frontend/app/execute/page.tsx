@@ -13,7 +13,7 @@ export default function ExecuteCode() {
   const [selectedFolder, setSelectedFolder] = useState<number | null>(null);
   const [contextMenuFolderId, setContextMenuFolderId] = useState<number | null>(null);
   const [showFolders, setShowFolders] = useState(true);
-  const [files, setFiles] = (useState<{ name: string }[]>([]))
+  const [files, setFiles] = useState<{ name: string }[]>([])
   const [fileName, setFileName] = useState("")
   const [selectedFile, setSelectedFile] =useState<string | null>(null);
   const [fileContent, setFileContent] = useState("");
@@ -27,6 +27,12 @@ export default function ExecuteCode() {
   useEffect(() => {
     if (token) fetchFolders();
   }, [token]);
+
+  useEffect(() => {
+    if (selectedFolder) {
+      fetchFiles(selectedFolder);
+    }
+  }, [selectedFolder]);
 
   async function fetchFolders() {
     try {
@@ -53,7 +59,7 @@ export default function ExecuteCode() {
         }
       });
       const data  = await res.json()
-      if(res.ok) setFiles(data.files)
+      if(res.ok) setFiles(data)
         else alert(data.message || "Failed to fetch files");
 
     } catch (error) {
@@ -88,7 +94,7 @@ export default function ExecuteCode() {
 
   // openfile 
 
-  async  function openFIle(folderId:number,fileName:string){
+  async  function openFile(folderId:number,fileName:string){
 
     try {
       const  res =  await fetch(`${API_URL1}/file/${folderId}/${fileName}`, {
@@ -110,24 +116,29 @@ export default function ExecuteCode() {
 
   // deletefile
 
-  async  function deleteFIle(folderId:number,fileName:string){
+  async function deleteFile(folderId: number, fileName: string) {
     console.log("Deleting file with data:", { folderId, fileName });
-
-      try {
-        const res  =  await fetch(`${API_URL1}/file/delete`,{
-          method:"DELETE",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ folderId, fileName: fileName }),
-        });
-        const data  =  await res.json()
-        if(res.ok){
-          setFiles(files.filter((file) =>  file.name !== fileName))
-        }else alert(data.message || "Failed to delete file");
-      } catch (error) {
-        console.error("Error deleting file:", error);
-
+  
+    try {
+      const res = await fetch(`${API_URL1}/file/delete`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ folderId, fileName }),
+      });
+  
+      if (res.ok) {
+        console.log("File deleted successfully");
+        await fetchFiles(folderId); // Re-fetch files after deletion
+      } else {
+        const data = await res.json();
+        alert(data.message || "Failed to delete file");
       }
+    } catch (error) {
+      console.error("Error deleting file:", error);
+    }
   }
+  
+  
 
   // update file
   async  function updateFile(folderId:number, fileName:string, content:string){
@@ -179,7 +190,6 @@ export default function ExecuteCode() {
     }
     setCreating(true);
   }
-
   async function deleteFolder(folderId: number) {
     if (!confirm("Are you sure you want to delete this folder?")) return;
     try {
@@ -187,12 +197,19 @@ export default function ExecuteCode() {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (res.ok) setFolders(folders.filter((folder) => folder.id !== folderId));
-      else alert("Failed to delete folder");
+  
+      if (res.ok) {
+        setFolders(folders.filter((folder) => folder.id !== folderId));
+        if (selectedFolder === folderId) {
+          setSelectedFolder(null);
+          setFiles([]); // Reset file list
+        }
+      } else alert("Failed to delete folder");
     } catch (error) {
       console.error("Error deleting folder:", error);
     }
   }
+  
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex">
@@ -210,34 +227,7 @@ export default function ExecuteCode() {
         </div>
   
 {/* File List Section */}
-{selectedFolder && (
-  <div className="mt-4 p-4 bg-gray-700 rounded shadow">
-    <h3 className="text-lg font-semibold mb-3">Files in {folders.find(f => f.id === selectedFolder)?.name}</h3>
-    <ul className="space-y-2">
-      {files?.length === 0 && <p className="text-gray-400">No files found.</p>}
-      {files?.map((file) => (
-        <li
-          key={file.name}
-          className={`p-2 bg-gray-600 rounded flex justify-between items-center cursor-pointer ${
-            selectedFile === file.name ? "bg-blue-600" : "hover:bg-gray-500"
-          }`}
-          onClick={() => openFIle(selectedFolder, file.name)}
-        >
-          <span>{file.name}</span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              deleteFIle(selectedFolder, file.name);
-            }}
-            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center"
-          >
-            <RiDeleteBin6Fill />
-          </button>
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
+
 
       </div>
   
@@ -287,36 +277,63 @@ export default function ExecuteCode() {
         <div className="grid grid-cols-1 gap-4">
           {folders.length === 0 && <p className="text-gray-400">No folders found.</p>}
           {folders.map((folder) => (
-  <div
-    key={folder.id}
-    className={`relative p-3 bg-gray-700 rounded shadow flex flex-row gap-2 items-center cursor-pointer ${
-      selectedFolder === folder.id ? "bg-blue-600" : "hover:bg-gray-600"
-    }`}
-    onClick={() => {
-      setSelectedFolder(folder.id); // Set selected folder
-      fetchFiles(folder.id); // Fetch files for the folder
-      setShowModal(true); // Show modal when a folder is clicked
-    }}
-    onContextMenu={(e) => {
-      e.preventDefault();
-      setContextMenuFolderId(folder.id === contextMenuFolderId ? null : folder.id);
-    }}
-  >
-    <CiFolderOn size={30} className="text-yellow-400" />
-    <span>{folder.name}</span>
+            <div
+              key={folder.id}
+              className={`relative p-3 bg-gray-700 rounded shadow flex flex-row gap-2 items-center cursor-pointer ${
+                selectedFolder === folder.id ? "bg-blue-600" : "hover:bg-gray-600"
+              }`}
+              onClick={() => {
+                setSelectedFolder(folder.id); // Set selected folder
+                fetchFiles(folder.id); // Fetch files for the folder
+                setShowModal(true); // Show modal when a folder is clicked
+              }}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                setContextMenuFolderId(folder.id === contextMenuFolderId ? null : folder.id);
+              }}
+            >
+              <CiFolderOn size={30} className="text-yellow-400" />
+              <span>{folder.name}</span>
 
-    {contextMenuFolderId === folder.id && (
-      <button
-        onClick={() => deleteFolder(folder.id)}
-        className="absolute top-1 right-1 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center"
-      >
-        <RiDeleteBin6Fill />
-      </button>
-    )}
-  </div>
-))}
+              {contextMenuFolderId === folder.id && (
+                <button
+                  onClick={() => deleteFolder(folder.id)}
+                  className="absolute top-1 right-1 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center"
+                >
+                  <RiDeleteBin6Fill />
+                </button>
+              )}
+            </div>
+          ))}
 
         </div>
+        {selectedFolder && (
+  <div className="mt-4 p-4 bg-gray-700 rounded shadow">
+    <ul className="space-y-2">
+      {files?.length === 0 && <p className="text-gray-400">No files found.</p>}
+      {files?.map((file) => (
+        <li
+          key={file.name}
+          className={`p-2 bg-gray-600 rounded flex justify-between items-center cursor-pointer ${
+            selectedFile === file.name ? "bg-blue-600" : "hover:bg-gray-500"
+          }`}
+          onClick={() => openFile(selectedFolder, file.name)}
+        >
+          <span>{file.name}</span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteFile(selectedFolder, file.name);
+            }}
+            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center ml-2"
+          >
+            <RiDeleteBin6Fill />
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
       </div>
   
       {/* Add File Modal */}
