@@ -60,6 +60,7 @@
     --color-red-600: oklch(0.577 0.245 27.325);
     --color-yellow-400: oklch(0.852 0.199 91.936);
     --color-green-400: oklch(0.792 0.209 151.711);
+    --color-green-600: oklch(0.627 0.194 149.214);
     --color-blue-100: oklch(0.932 0.032 255.585);
     --color-blue-400: oklch(0.707 0.165 254.624);
     --color-blue-500: oklch(0.623 0.214 259.815);
@@ -699,6 +700,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-gray-700);
+      }
+    }
+  }
+  .hover\:bg-green-600 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-green-600);
       }
     }
   }
