@@ -6,15 +6,15 @@ import CodeEditor from "@/components/CodeEditor";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { IoAdd } from "react-icons/io5";
 import { CiFileOn } from "react-icons/ci";
-import { IoIosArrowDropdown } from "react-icons/io";
+import { IoMdArrowDropdown } from "react-icons/io";
 import { AiOutlineDelete } from "react-icons/ai";
+import { IoIosAddCircleOutline } from "react-icons/io";
 
 export default function ExecuteCode() {
   const [folders, setFolders] = useState<{ id: number; name: string }[]>([]);
   const [folderName, setFolderName] = useState("");
   const [creating, setCreating] = useState(true);
   const [selectedFolder, setSelectedFolder] = useState<number | null>(null);
-  const [contextMenuFolderId, setContextMenuFolderId] = useState<number | null>(null);
   const [showFolders, setShowFolders] = useState(true);
   const [files, setFiles] = useState<{ name: string }[]>([])
   const [fileName, setFileName] = useState("")
@@ -31,7 +31,6 @@ export default function ExecuteCode() {
   const [fileContent, setFileContent] = useState<{ [key: number]: string }>({});
   const [showModal, setShowModal] = useState(false)
   const [expandedFolders, setExpandedFolders] = useState([{}])
-
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const API_URL = "http://localhost:3001/folder";
   const API_URL1 = "http://localhost:3001";
@@ -326,60 +325,67 @@ export default function ExecuteCode() {
       <div className="grid grid-cols-1 gap-4">
         {folders.length === 0 && <p className="text-gray-400">No folders found.</p>}
         {folders.map((folder) => (
-          <div key={folder.id} className="bg-gray-800 rounded shadow">
-            {/* Folder Header */}
-            <div className="relative p-3 flex items-center justify-between cursor-pointer hover:bg-gray-600">
-            <div className="flex items-center space-x-2">
-  {/* Dropdown Icon with onClick */}
-  {expandedFolders[folder.id] ? (
-    <IoIosArrowDropdown
-      className="text-white cursor-pointer"
-      onClick={() => toggleFolder(folder.id)}
-    />
-  ) : (
-    <IoIosArrowDropdown
-      className="text-white cursor-pointer"
-      onClick={() => toggleFolder(folder.id)}
-    />
-  )}
-  
-  {/* Folder Icon */}
-  <CiFolderOn size={30} className="text-yellow-400" />
-  
-  {/* Folder Name */}
-  <span>{folder.name}</span>
-</div>
+  <div key={folder.id}>
+    {/* Folder Header */}
+    <div className="flex items-center space-x-2">
+      {/* Toggle folder expand/collapse */}
+      <IoMdArrowDropdown
+        className={`text-white cursor-pointer transition-transform duration-300  ${ expandedFolders[folder.id] ? 'rotate-180' : 'rotate-0'}`}
+        onClick={() => toggleFolder(folder.id)}
+      />
+      <CiFolderOn size={30} className="text-yellow-400" />
+      <span>{folder.name}</span>
 
+      {/* New File Button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent folder toggle
+          setSelectedFolder(folder.id); // Store selected folder ID
+          setShowModal(true); // Open modal
+        }}
+        className="ml-auto px-3 py-1 text-2xl bg-transparent border border-blue-100 cursor-pointer text-white rounded hover:bg-blue-600"
+      >
+        <IoIosAddCircleOutline/>
+      </button>
+      <button
+    onClick={(e) => {
+      e.stopPropagation(); // Prevent folder toggle
+      deleteFolder(folder.id);
+    }}
+    className="px-3 py-[2%] text-white text-2xl rounded border border-blue-100 hover:bg-red-600 flex items-center"
+  >
+    <RiDeleteBin6Fill className="text-xl" />
+  </button>
+    </div>
 
-              {/* Delete Folder Button */}
-              <button onClick={() => deleteFolder(folder.id)} className="px-3 py-1  text-white rounded hover:bg-red-600 flex items-center">
-                <AiOutlineDelete  />
-              </button>
-            </div>
-
-            {/* Files inside the folder */}
-            {expandedFolders[folder.id] && (
-              <ul className="pl-10 py-2 bg-gray-800 rounded">
-                {files?.length === 0 && <p className="text-gray-400">No files found.</p>}
-                {files?.map((file) => (
-                  <li key={file.name} className="p-2 flex items-center cursor-pointer hover:bg-gray-500" onClick={() => openFile(folder.id, file.name)}>
-                    <CiFileOn className="text-2xl" />
-                    <span className="ml-2">{file.name}</span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteFile(folder.id, file.name);
-                      }}
-                      className="px-3 py-1 text-white rounded hover:bg-red-600 flex items-center ml-auto"
-                    >
-                      <RiDeleteBin6Fill />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+    {/* Files List */}
+    {expandedFolders[folder.id] && (
+      <ul className="pl-10 py-2 bg-gray-800 rounded">
+        {files?.length === 0 && <p className="text-gray-400">No files found.</p>}
+        {files?.map((file) => (
+          <li
+            key={file.name}
+            className="p-2 flex items-center cursor-pointer hover:bg-gray-500"
+            onClick={() => openFile(folder.id, file.name)}
+          >
+            <CiFileOn className="text-2xl" />
+            <span className="ml-2">{file.name}</span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteFile(folder.id, file.name);
+              }}
+              className="px-3 py-1 text-white rounded hover:bg-red-600 flex items-center ml-auto"
+            >
+              <RiDeleteBin6Fill />
+            </button>
+          </li>
         ))}
+      </ul>
+    )}
+  </div>
+))}
+
       </div>
     </div>
   

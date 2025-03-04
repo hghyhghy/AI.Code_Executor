@@ -60,10 +60,12 @@
     --color-red-600: oklch(0.577 0.245 27.325);
     --color-yellow-400: oklch(0.852 0.199 91.936);
     --color-green-400: oklch(0.792 0.209 151.711);
+    --color-blue-100: oklch(0.932 0.032 255.585);
     --color-blue-400: oklch(0.707 0.165 254.624);
     --color-blue-500: oklch(0.623 0.214 259.815);
     --color-blue-600: oklch(0.546 0.245 262.881);
     --color-blue-700: oklch(0.488 0.243 264.376);
+    --color-blue-950: oklch(0.282 0.091 267.935);
     --color-gray-100: oklch(0.967 0.003 264.542);
     --color-gray-200: oklch(0.928 0.006 264.531);
     --color-gray-300: oklch(0.872 0.01 258.338);
@@ -282,6 +284,9 @@
   .left-3 {
     left: calc(var(--spacing) * 3);
   }
+  .left-40 {
+    left: calc(var(--spacing) * 40);
+  }
   .mx-auto {
     margin-inline: auto;
   }
@@ -367,6 +372,12 @@
     --tw-translate-y: calc(calc(1/2 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
+  .rotate-0 {
+    rotate: 0deg;
+  }
+  .rotate-180 {
+    rotate: 180deg;
+  }
   .transform {
     transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);
   }
@@ -433,6 +444,12 @@
     border-style: var(--tw-border-style);
     border-width: 1px;
   }
+  .border-blue-100 {
+    border-color: var(--color-blue-100);
+  }
+  .border-blue-950 {
+    border-color: var(--color-blue-950);
+  }
   .border-gray-300 {
     border-color: var(--color-gray-300);
   }
@@ -466,6 +483,9 @@
   .bg-gray-950 {
     background-color: var(--color-gray-950);
   }
+  .bg-transparent {
+    background-color: transparent;
+  }
   .bg-white {
     background-color: var(--color-white);
   }
@@ -484,6 +504,9 @@
   .p-8 {
     padding: calc(var(--spacing) * 8);
   }
+  .px-2 {
+    padding-inline: calc(var(--spacing) * 2);
+  }
   .px-3 {
     padding-inline: calc(var(--spacing) * 3);
   }
@@ -498,6 +521,21 @@
   }
   .py-2 {
     padding-block: calc(var(--spacing) * 2);
+  }
+  .py-\[1\.5\%\] {
+    padding-block: 1.5%;
+  }
+  .py-\[1\.5\] {
+    padding-block: 1.5;
+  }
+  .py-\[1\.8\%\] {
+    padding-block: 1.8%;
+  }
+  .py-\[1\.9\%\] {
+    padding-block: 1.9%;
+  }
+  .py-\[2\%\] {
+    padding-block: 2%;
   }
   .pl-10 {
     padding-left: calc(var(--spacing) * 10);
@@ -613,6 +651,10 @@
   .duration-200 {
     --tw-duration: 200ms;
     transition-duration: 200ms;
+  }
+  .duration-300 {
+    --tw-duration: 300ms;
+    transition-duration: 300ms;
   }
   .ease-out {
     --tw-ease: var(--ease-out);
