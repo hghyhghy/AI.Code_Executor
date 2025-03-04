@@ -1,14 +1,20 @@
 'use client'
-import React, { useState, useEffect } from 'react';
-import Editor, { useMonaco } from "@monaco-editor/react";
+import React, { useState, useEffect ,useRef} from 'react';
+import Editor, { Monaco, useMonaco } from "@monaco-editor/react";
+import * as monaco from 'monaco-editor';
 import { executeCode, getCodeSuggestion } from '@/lib/api';
 import LanguageSelect from './LanguageSelect';
 import { RxResume } from "react-icons/rx";
 import { VscCopilot } from "react-icons/vsc";
 
 type CodeEditorProps = {
-    folderId?: number; // Optional: Can be undefined if no folder is selected
-    folderName?: string; // Added folder name for better UI
+    folderId?: number;
+    folderName?: string;
+    fileId?: number;
+    fileContent?: string;
+    language?: string;
+    onContentChange?: (fileId: number, newContent: string) => void; 
+    updateFile: (folderId: number, fileName: string, content: string) => void;// <-- Add this to update parent
 };
 
 const defaultCode = {
@@ -24,16 +30,47 @@ func main() {
 
 type Language = keyof typeof defaultCode;
 
-const CodeEditor = ({ folderId, folderName }: CodeEditorProps) => {
-    const [language, setLanguage] = useState<Language>("python");
-    const [code, setCode] = useState<string>(defaultCode[language]);
+const CodeEditor = ({  
+    folderId, 
+    folderName, 
+    fileId, 
+    fileContent, 
+    language: initialLanguage,
+    updateFile,
+    onContentChange // <-- Added
+}: CodeEditorProps) => {
+    const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+    const [language, setLanguage] = useState<Language>(initialLanguage as Language || "python");
+    const [code, setCode] = useState<string>(fileContent || defaultCode[language]); 
     const [output, setOutput] = useState<string>("");
     const monaco = useMonaco();
 
+    // 🔄 When a new file is selected, update code
     useEffect(() => {
-        setCode(defaultCode[language]); // Update code when language changes
+        if (fileContent !== undefined) {
+            setCode(fileContent);
+        }
+    }, [fileId, fileContent]);
+
+    // 🔄 When the language changes, set default code ONLY IF no file is open
+    useEffect(() => {
+        if (!fileContent) {
+            setCode(defaultCode[language]); // Don't overwrite if file is open
+        }
     }, [language]);
 
+    const handleEditorDidMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
+        editorRef.current = editor;
+    
+        // Detect when the editor loses focus (blur event)
+        editor.onDidBlurEditorText(() => {
+          if (folderId && folderName) {
+            updateFile(folderId, folderName, code);
+          }
+        });
+      };
+
+    // 🔄 Monaco Editor Setup (Syntax Highlighting, Suggestions)
     useEffect(() => {
         if (!monaco) return;
 
@@ -80,26 +117,44 @@ const CodeEditor = ({ folderId, folderName }: CodeEditorProps) => {
 
     }, [monaco]);
 
+    // 🔄 Handle Code Execution
     const handleRun = async () => {
         const result = await executeCode(code, language);
         setOutput(result);
     };
 
+    // 🔄 AI Code Suggestion
     const handleSuggest = async () => {
         const aiSuggestion = await getCodeSuggestion(language, code);
         setCode(prevCode => `${prevCode}\n${aiSuggestion}`);
     };
+    const handleSave = () => {
+        console.log("Debug - Saving file with:", { folderId, fileId, fileContent: code });
+    
+        if (folderId == null || fileId == null) { // Only triggers alert if values are missing
+            alert("Folder or File ID is missing!");
+            return;
+        }
+    
+        updateFile(folderId, folderName || "Untitled", code);
+    };
+    
+    
+    
 
     return (
-        <div className="w-[120%] mx-auto  mt-10 p-4 bg-gray-900 text-white rounded-lg shadow-lg flex flex-col">
-            {/* Folder Name Display */}
-
-
+        <div className="w-[120%] mx-auto mt-10 p-4 bg-gray-900 text-white rounded-lg shadow-lg flex flex-col">
             {/* Language Selector */}
-            <LanguageSelect language={language} setLanguage={(lang) => setLanguage(lang as "python" | "javascript" | "go")} />
+            <LanguageSelect language={language} setLanguage={(lang) => setLanguage(lang as Language)} />
 
             {/* Buttons */}
             <div className="flex gap-3 mt-1 mb-4">
+            <button
+                    onClick={handleSave}
+                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
+                >
+                    💾 Save
+                </button>
                 <button
                     onClick={handleRun}
                     className="flex items-center gap-2 cursor-pointer bg-gray-100 hover:bg-gray-200 text-black font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
@@ -117,21 +172,19 @@ const CodeEditor = ({ folderId, folderName }: CodeEditorProps) => {
 
             {/* Code Editor */}
             <Editor
-                height="500px"
-                theme="vs-dark"
-                language={language}
-                value={code}
-                onChange={(value) => setCode(value || "")}
-                options={{
-                    fontSize: 14,
-                    suggest: { showWords: true, showFunctions: true, showVariables: true },
-                    quickSuggestions: true,
-                    parameterHints: { enabled: true },
-                    autoClosingBrackets: "always",
-                    autoClosingQuotes: "always",
-                    tabCompletion: "on",
-                }}
-            />
+      height="500px"
+      theme="vs-dark"
+      language={language}
+      value={code}
+      onChange={(value) => setCode(value || "")}
+      onMount={handleEditorDidMount} // Attach the blur event on mount
+      options={{
+        fontSize: 14,
+        autoClosingBrackets: "always",
+        autoClosingQuotes: "always",
+        tabCompletion: "on",
+      }}
+    />
 
             {/* Output Section */}
             <div className="mt-4 p-2 bg-gray-800 rounded w-full">

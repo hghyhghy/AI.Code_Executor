@@ -18,8 +18,17 @@ export default function ExecuteCode() {
   const [showFolders, setShowFolders] = useState(true);
   const [files, setFiles] = useState<{ name: string }[]>([])
   const [fileName, setFileName] = useState("")
-  const [selectedFile, setSelectedFile] =useState<string | null>(null);
-  const [fileContent, setFileContent] = useState("");
+  interface File {
+    id: number;
+    folderId: number;
+    folderName: string;
+    name: string;
+    content: string;
+    language: string;
+  }
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [fileContent, setFileContent] = useState<{ [key: number]: string }>({});
   const [showModal, setShowModal] = useState(false)
   const [expandedFolders, setExpandedFolders] = useState([{}])
 
@@ -35,6 +44,14 @@ export default function ExecuteCode() {
     }))
     fetchFiles(folderId)
   }
+
+  useEffect(() => {
+    const lastOpenedFile  =  localStorage.getItem("last_opened_file")
+    if(lastOpenedFile ){
+      const {folderId,fileName} = JSON.parse(lastOpenedFile )
+      openFile(folderId,fileName)
+    }
+  },[])
   useEffect(() => {
     if (token) {
       fetchFolders().then((fetchedFolders) => {
@@ -113,27 +130,35 @@ export default function ExecuteCode() {
   
 
   // openfile 
-
-  async  function openFile(folderId:number,fileName:string){
-
+  async function openFile(folderId: number, fileName: string) {
+    console.log(`Opening file: folderId=${folderId}, fileName=${fileName}`);
+  
     try {
-      const  res =  await fetch(`${API_URL1}/file/${folderId}/${fileName}`, {
-        method :"GET",
-        headers:{
-          Authorization: `Bearer ${token}`
-        }
+      const res = await fetch(`${API_URL1}/file/${folderId}/${fileName}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      const data =  await res.json()
-      if (res.ok){
-        setSelectedFile(fileName)
-        setFileContent(data.content)
+  
+      if (res.ok) {
+        const data = await res.json();
+        console.log("🔄 Fetched from MySQL:", data);
+  
+        if (data && data.content !== undefined) {
+          setFileContent(data.content); // ✅ Force UI to show latest content
+        } else {
+          console.warn("⚠️ No content found in database, setting empty.");
+          setFileContent(""); // Set empty if no content exists
+        }
+      } else {
+        console.warn("⚠️ Failed to fetch file from MySQL.");
       }
-      else alert(data.message || "Failed to fetch file content");
     } catch (error) {
-      console.error("Error fetching file content:", error);
+      console.error("❌ Error fetching file:", error);
     }
   }
-
+  
+  
   // deletefile
 
   async function deleteFile(folderId: number, fileName: string) {
@@ -157,35 +182,39 @@ export default function ExecuteCode() {
       console.error("Error deleting file:", error);
     }
   }
-  
-  
-
   // update file
-  async  function updateFile(folderId:number, fileName:string, content:string){
+  async function updateFile(folderId: number, fileName: string, content: string) {
     try {
-      const res  =  await fetch(`${API_URL1}/file/update`,{
-        method:"PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ folderId, fileName, content }),
-      });
+        console.log(`📝 Updating file: folderId=${folderId}, fileName=${fileName}, content=${content}`);
+        console.log("🔑 Token:", token);
 
-      const data  =  await res.json()
-      if(res.ok){
-        setFileContent(content)
-        alert("File updated successfully");
-      }
-      else {
-        alert(data.message || "Failed to update file");
-      }
+        const res = await fetch(`${API_URL1}/file/update`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ folderId, fileName, content }),
+        });
+
+        const responseText = await res.text();
+        console.log("📨 Response from server:", responseText);
+
+        if (res.ok) {
+            console.log("✅ Update successful in MySQL");
+            setFileContent(content);
+            await openFile(folderId, fileName);
+        } else {
+            console.warn("⚠️ Update failed");
+        }
     } catch (error) {
-      console.error("Error updating file:", error);
-
+        console.error("❌ Error updating file:", error);
     }
-  }
+}
 
-
-
-
+  
+  
+  
   async function createFolder() {
     if (!folderName.trim()) return alert("Folder name cannot be empty");
     setCreating(true);
@@ -244,12 +273,32 @@ export default function ExecuteCode() {
             <FaBars size={24} />
           </button>
           <h1 className="font-bold text-3xl mb-2">Online Code Editor</h1>
+
         </div>
+        <div className=" w-[65%] absolute left-0">
+
+  <CodeEditor
+    folderId={selectedFile?.folderId ?? undefined}  // Ensures a default value
+    folderName={selectedFile?.folderName || "Untitled"}
+    fileId={selectedFile?.id ?? undefined} // Ensures a default value
+    fileContent={selectedFile?.content || ""}
+    language={selectedFile?.language || "python"}
+    updateFile={updateFile}
+/>
+
+
+
+
+
+          </div>
   
 {/* File List Section */}
 
 
+    
+
       </div>
+
   
       {/* Folder Section */}
       <div className="fixed md:relative top-0 right-0 w-80 bg-gray-800 p-4 rounded-md shadow-lg h-screen overflow-y-auto transition-transform transform">
@@ -280,11 +329,27 @@ export default function ExecuteCode() {
           <div key={folder.id} className="bg-gray-800 rounded shadow">
             {/* Folder Header */}
             <div className="relative p-3 flex items-center justify-between cursor-pointer hover:bg-gray-600">
-              <div className="flex items-center space-x-2" onClick={() => toggleFolder(folder.id)}>
-                {expandedFolders[folder.id] ? <IoIosArrowDropdown  className="text-white" /> : <IoIosArrowDropdown  className="text-white" />}
-                <CiFolderOn size={30} className="text-yellow-400" />
-                <span>{folder.name}</span>
-              </div>
+            <div className="flex items-center space-x-2">
+  {/* Dropdown Icon with onClick */}
+  {expandedFolders[folder.id] ? (
+    <IoIosArrowDropdown
+      className="text-white cursor-pointer"
+      onClick={() => toggleFolder(folder.id)}
+    />
+  ) : (
+    <IoIosArrowDropdown
+      className="text-white cursor-pointer"
+      onClick={() => toggleFolder(folder.id)}
+    />
+  )}
+  
+  {/* Folder Icon */}
+  <CiFolderOn size={30} className="text-yellow-400" />
+  
+  {/* Folder Name */}
+  <span>{folder.name}</span>
+</div>
+
 
               {/* Delete Folder Button */}
               <button onClick={() => deleteFolder(folder.id)} className="px-3 py-1  text-white rounded hover:bg-red-600 flex items-center">
