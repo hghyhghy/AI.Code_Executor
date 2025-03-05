@@ -64,7 +64,10 @@ export class FileService {
         throw new HttpException('File not found', HttpStatus.NOT_FOUND);
       }
 
-    return { id:file.id,name:file.name,content:file.content}
+    return {folderId:file.folderId, id:file.id,name:file.name,content:file.content
+
+        // these backend error is fixed which is now returning the  folderID 
+    }
     
    }
 

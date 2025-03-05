@@ -47,6 +47,7 @@ export class FileController {
         const userId = (req.user as any)?.id;
         
         return this.fileService.getFileContent(userId,id,fileName)
+        // issues for returning the folderID is  fixed 
     }
 
     @Put('update')
