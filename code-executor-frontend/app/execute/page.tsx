@@ -34,7 +34,11 @@ export default function ExecuteCode() {
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const API_URL = "http://localhost:3001/folder";
   const API_URL1 = "http://localhost:3001";
-
+  useEffect(() => {
+    if (selectedFile) {
+      console.log(`Updated selectedFile: folderId=${selectedFile.folderId}, fileName=${selectedFile.folderName}, id=${selectedFile.id}, name=${selectedFile.name}, content=${selectedFile.content}`);
+    }
+  }, [selectedFile]); // Runs whenever `selectedFile` changes
 
   const toggleFolder = (folderId: number) => {
     setExpandedFolders((prev) => ({
@@ -143,11 +147,26 @@ export default function ExecuteCode() {
         const data = await res.json();
         console.log("🔄 Fetched from MySQL:", data);
   
-        if (data && data.content !== undefined) {
-          setFileContent(data.content); // ✅ Force UI to show latest content
+        if (data) {
+          setFileContent((prev) => ({
+            ...prev,
+            [data.id]: data.content,
+          }));
+  
+          setSelectedFile({
+            id: data.id,
+            folderId: data.folderId,
+            folderName: data.folderName,
+            name: data.name,
+            content: data.content,
+            language: data.language,
+          });
+  
+          console.log("Response okay");
         } else {
           console.warn("⚠️ No content found in database, setting empty.");
-          setFileContent(""); // Set empty if no content exists
+          setFileContent({});
+          setSelectedFile(null);
         }
       } else {
         console.warn("⚠️ Failed to fetch file from MySQL.");
@@ -156,6 +175,7 @@ export default function ExecuteCode() {
       console.error("❌ Error fetching file:", error);
     }
   }
+  
   
   
   // deletefile
@@ -276,27 +296,22 @@ export default function ExecuteCode() {
         </div>
         <div className=" w-[65%] absolute left-0">
 
+ {selectedFile &&          
+
   <CodeEditor
-    folderId={selectedFile?.folderId ?? undefined}  // Ensures a default value
-    folderName={selectedFile?.folderName || "Untitled"}
-    fileId={selectedFile?.id ?? undefined} // Ensures a default value
-    fileContent={selectedFile?.content || ""}
-    language={selectedFile?.language || "python"}
+    folderId={selectedFile?.folderId }  // Ensures a default value
+    folderName={selectedFile?.name}
+    fileId={selectedFile?.id} // Ensures a default value
+    fileContent={selectedFile?.content}
+    language={selectedFile?.language}
     updateFile={updateFile}
 />
-
-
-
-
-
-          </div>
+}
+</div>
   
 {/* File List Section */}
 
-
-    
-
-      </div>
+</div>
 
   
       {/* Folder Section */}
