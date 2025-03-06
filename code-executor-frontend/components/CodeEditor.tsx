@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
-import Editor, { Monaco, useMonaco } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import * as monaco from 'monaco-editor';
 import { executeCode, getCodeSuggestion } from '@/lib/api';
 import LanguageSelect from './LanguageSelect';
@@ -18,18 +18,7 @@ type CodeEditorProps = {
     updateFile: (folderId: number, fileName: string, content: string) => void;
 };
 
-const defaultCode = {
-    python: "print('Hello, World!')",
-    javascript: "console.log('Hello, World!');",
-    go: `package main
-
-import "fmt"
-
-func main() {
-    fmt.Println("Hello, World!")
-}`};
-
-type Language = keyof typeof defaultCode;
+type Language = "python" | "javascript" | "go";
 
 const CodeEditor = ({
     folderId,
@@ -42,93 +31,86 @@ const CodeEditor = ({
 }: CodeEditorProps) => {
     const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
     const [language, setLanguage] = useState<Language>(initialLanguage as Language || "python");
-    const [code, setCode] = useState<string>(fileContent || defaultCode[language]);
+    const [fileContents, setFileContents] = useState<{ [key: number]: string }>({});
+    const [currentFileId, setCurrentFileId] = useState<number | null>(fileId ?? null);
     const [output, setOutput] = useState<string>("");
 
-    const monacoInstance = useMonaco();
-
-    // Update code when a new file is selected
+    // Load file content when switching files
     useEffect(() => {
-        if (fileContent !== undefined) {
-            setCode(fileContent);
+        if (fileId !== undefined) {
+            setCurrentFileId(fileId);
+            setFileContents((prev) => ({
+                ...prev,
+                [fileId]: prev[fileId] ?? fileContent ?? "",
+            }));
         }
     }, [fileId, fileContent]);
 
-    // Change default code only if no file is selected
-    useEffect(() => {
-        if (!fileContent) {
-            setCode(defaultCode[language]);
-        }
-    }, [language]);
-
-    // Handle editor mount
     const handleEditorDidMount = (editor: monaco.editor.IStandaloneCodeEditor) => {
         editorRef.current = editor;
 
         // Auto-save when editor loses focus
         editor.onDidBlurEditorText(() => {
-            if (folderId && folderName) {
-                updateFile(folderId, folderName, code);
+            if (folderId && currentFileId !== null) {
+                updateFile(folderId, folderName || "Untitled", fileContents[currentFileId]);
             }
         });
     };
 
-    // Save Function
+    const handleEditorChange = (value?: string) => {
+        if (value !== undefined && currentFileId !== null) {
+            setFileContents((prev) => ({
+                ...prev,
+                [currentFileId]: value,
+            }));
+        }
+    };
+
     const handleSave = () => {
-        if (folderId == null || fileId == null) {
+        if (folderId == null || currentFileId == null) {
             alert("Folder or File ID is missing!");
             return;
         }
-        updateFile(folderId, folderName || "Untitled", code);
+        onContentChange?.(currentFileId, fileContents[currentFileId]);
+        updateFile(folderId, folderName || "Untitled", fileContents[currentFileId]);
     };
 
-    // Code Execution
     const handleRun = async () => {
-        const result = await executeCode(code, language);
+        if (!fileContents[currentFileId || 0]) return;
+        const result = await executeCode(fileContents[currentFileId || 0], language);
         setOutput(result);
     };
 
-    // AI Code Suggestion
     const handleSuggest = async () => {
-        const aiSuggestion = await getCodeSuggestion(language, code);
-        setCode(prevCode => `${prevCode}\n${aiSuggestion}`);
+        const aiSuggestion = await getCodeSuggestion(language, fileContents[currentFileId || 0]);
+        setFileContents((prev) => ({
+            ...prev,
+            [currentFileId || 0]: `${prev[currentFileId || 0]}\n${aiSuggestion}`,
+        }));
     };
 
     return (
         <div className="w-[120%] mx-auto mt-10 p-4 bg-gray-900 text-white rounded-lg shadow-lg flex flex-col">
-            {/* Language Selector */}
             <LanguageSelect language={language} setLanguage={(lang) => setLanguage(lang as Language)} />
 
-            {/* Buttons */}
             <div className="flex gap-3 mt-1 mb-4">
-                <button
-                    onClick={handleSave}
-                    className="flex items-center gap-2 bg-gray-100 text-black hover:bg-blue-600  font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
-                >
-                     <FaRegSave />
-                     Save
+                <button onClick={handleSave} className="flex items-center gap-2 bg-gray-100 text-black cursor-pointer hover:bg-gray-200 font-medium py-2 px-5 rounded-lg shadow-md transition duration-200">
+                    <FaRegSave /> Save
                 </button>
-                <button
-                    onClick={handleRun}
-                    className="flex items-center gap-2 cursor-pointer bg-gray-100 hover:bg-gray-200 text-black font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
-                >
+                <button onClick={handleRun} className="flex items-center gap-2 cursor-pointer bg-gray-100 hover:bg-gray-200 text-black font-medium py-2 px-5 rounded-lg shadow-md transition duration-200">
                     <RxResume className="text-lg" /> Run
                 </button>
-                <button
-                    onClick={handleSuggest}
-                    className="flex items-center gap-2 cursor-pointer bg-black hover:bg-gray-700 text-white font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
-                >
+                <button onClick={handleSuggest} className="flex items-center gap-2 cursor-pointer bg-black hover:bg-gray-700 text-white font-medium py-2 px-5 rounded-lg shadow-md transition duration-200">
                     <VscCopilot className="text-lg" /> Code Copilot
                 </button>
             </div>
 
-            {/* Code Editor */}
             <Editor
                 height="500px"
                 theme="vs-dark"
                 language={language}
-                value={code}
-                onChange={(value) => setCode(value || "")}
+                value={fileContents[currentFileId || 0]}
+                onChange={handleEditorChange}
                 onMount={handleEditorDidMount}
                 options={{
                     fontSize: 14,
@@ -138,7 +120,6 @@ const CodeEditor = ({
                 }}
             />
 
-            {/* Output Section */}
             <div className="mt-4 p-2 bg-gray-800 rounded w-full">
                 <h3 className="text-lg font-semibold">Output</h3>
                 <pre className="text-green-400 whitespace-pre-wrap break-words">

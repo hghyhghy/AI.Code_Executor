@@ -36,7 +36,7 @@ export default function ExecuteCode() {
   const API_URL1 = "http://localhost:3001";
   useEffect(() => {
     if (selectedFile) {
-      console.log(`Updated selectedFile: folderId=${selectedFile.folderId}, fileName=${selectedFile.folderName}, id=${selectedFile.id}, name=${selectedFile.name}, content=${selectedFile.content}`);
+      console.log(`Updated selectedFile: folderId=${selectedFile.folderId}, fileName=${selectedFile.folderName}, fileId=${selectedFile.id}, name=${selectedFile.name}, content=${selectedFile.content}`);
     }
   }, [selectedFile]); // Runs whenever `selectedFile` changes
 
