@@ -7,6 +7,9 @@ import LanguageSelect from './LanguageSelect';
 import { RxResume } from "react-icons/rx";
 import { VscCopilot } from "react-icons/vsc";
 import { FaRegSave } from "react-icons/fa";
+import { FaShareNodes } from "react-icons/fa6";
+import { useRouter } from "next/navigation";
+
 
 type CodeEditorProps = {
     folderId?: number;
@@ -35,7 +38,10 @@ const CodeEditor = ({
     const [currentFileId, setCurrentFileId] = useState<number | null>(fileId ?? null);
     const [output, setOutput] = useState<string>("");
 
+  const router =  useRouter()
+
     // Load file content when switching files
+
     useEffect(() => {
         if (fileId !== undefined) {
             setCurrentFileId(fileId);
@@ -102,6 +108,11 @@ const CodeEditor = ({
                 </button>
                 <button onClick={handleSuggest} className="flex items-center gap-2 cursor-pointer bg-black hover:bg-gray-700 text-white font-medium py-2 px-5 rounded-lg shadow-md transition duration-200">
                     <VscCopilot className="text-lg" /> Code Copilot
+                </button>
+                <button 
+                onClick={() => router.push("/share")}
+                className="flex items-center gap-2 cursor-pointer bg-black hover:bg-gray-700 text-white font-medium py-2 px-5 rounded-lg shadow-md transition duration-200">
+                    <FaShareNodes className="text-lg" /> Share
                 </button>
             </div>
 

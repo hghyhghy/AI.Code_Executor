@@ -7,7 +7,6 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import { IoAdd } from "react-icons/io5";
 import { CiFileOn } from "react-icons/ci";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { AiOutlineDelete } from "react-icons/ai";
 import { IoIosAddCircleOutline } from "react-icons/io";
 
 export default function ExecuteCode() {

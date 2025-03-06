@@ -15,6 +15,12 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/execute/page.js"
+    ],
+    "/share/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/share/page.css",
+      "static/chunks/app/share/page.js"
     ]
   }
 }
