@@ -34,15 +34,15 @@ export class GeminiService {
 
     async  suggestCode(language:string, currentCode:string):Promise<string>{
         try {
+            const model =   this.genAI.getGenerativeModel({model:"gemini-1.5-pro-002"})
+            const prompt = `The user is writing code in ${language}. Here is their current code:\n\n${currentCode}\n\nThey are stuck and need help completing or improving it. Provide only the relevant code without any extra explanation.`;
 
-            const model = this.genAI.getGenerativeModel({model:"gemini-1.5-pro-002"})
-            const prompt = `The user is writing code in ${language}. Here is their current code:
+            const result =  await model.generateContent(prompt)
+            const responseText =  result.response.text()
 
-            ${currentCode}
-
-            They are stuck and need help completing or improving it. Provide a relevant suggestion.`;
-            const result  = await  model.generateContent(prompt)
-            return result.response.text()
+            const match  =  responseText.match(/```[\s\S]*?\n([\s\S]*?)\n```/);
+            const extractCode =  match ?  match[1].trim() : responseText.trim()
+            return extractCode;
             
         } catch (error) {
             console.error("Gemini API error:", error);
