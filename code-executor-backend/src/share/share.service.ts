@@ -10,6 +10,14 @@ export class ShareService {
 
     // nest js code for sharing ID  
     async  shareCode(userId:number,code:string,language:string,output?:string){
+        const userExists  = await this.prisma.user.findUnique ({
+            where :{
+                id:userId
+            }
+        })
+        if (!userExists) {
+            throw new Error(`User with ID ${userId} does not exist.`);
+          }
         const sharedCode =  await this.prisma.sharedCode.create({
             data:{
                 userId:Number(userId),

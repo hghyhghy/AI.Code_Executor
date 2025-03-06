@@ -61,12 +61,12 @@ model File{
 }
 
 model SharedCode {
-  id        String   @id @default(uuid())  // Unique identifier for sharing
-  userId    Int      // User who created the shareable link
-  code      String   @db.LongText()  // Code content
-  language  String   // Programming language
-  output    String?  @db.Text()  // Execution result (optional)
+  id        String      @id @default(uuid())
+  userId    Int
+  code      String   @db.LongText()
+  language  String
+  output    String?  @db.Text()
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
