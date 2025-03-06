@@ -21,6 +21,7 @@ model User{
   password String
   executionHistories ExecutionHistory[]
   folders Folder[]
+  sharedcode SharedCode[]
 
 
   
@@ -30,7 +31,7 @@ model ExecutionHistory {
 
   id        Int      @id @default(autoincrement()) // Auto-incrementing integer ID
   userId    Int      // Store the ID of the user who executed the code
-  code      String   // The executed code
+  code      String @db.LongText()   // The executed code
   language  String   // Programming language (Python, Node.js, Go)
   output    String  @db.Text()  // Output from the execution // Increase column size to TEXT
   createdAt DateTime @default(now())
@@ -57,4 +58,15 @@ model File{
   folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   @@unique([name, folderId]) // Ensure file names are unique inside a folder
+}
+
+model SharedCode {
+  id        String   @id @default(uuid())  // Unique identifier for sharing
+  userId    Int      // User who created the shareable link
+  code      String   @db.LongText()  // Code content
+  language  String   // Programming language
+  output    String?  @db.Text()  // Execution result (optional)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
