@@ -27,7 +27,7 @@ export class ShareService {
             }
         });
 
-        return { link: `https://yourapp.com/share/${sharedCode.id}` };
+        return { link: `http://localhost:3001/share/${sharedCode.id}` };
     }
 
     // retrieve the code snippet from their ID

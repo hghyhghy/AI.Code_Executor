@@ -5,11 +5,11 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Request } from 'express';
 
 @Controller('share')
-@UseGuards(JwtAuthGuard)
 export class ShareController {
 
     constructor(private  readonly shareService:ShareService){}
-
+    
+    @UseGuards(JwtAuthGuard)
     @Post('set')
     async shareCode( @Req() req:Request, @Body() {code,language,output}){
         const userId = (req.user as any)?.id;
