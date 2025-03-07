@@ -7,10 +7,13 @@ import { GeminiService } from './gemini/gemini.service';
 import { FolderModule } from './folder/folder.module';
 import { FileModule } from './file/file.module';
 import { ShareModule } from './share/share.module';
+import { CollaborationGateway } from './collaboration/collaboration.gateway';
+import { CollaborationService } from './collaboration/collaboration.service';
+import { CollaborationModule } from './collaboration/collaboration.module';
 
 @Module({
-  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule],
+  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule],
   controllers: [AppController],
-  providers: [AppService, GeminiService],
+  providers: [AppService, GeminiService, CollaborationGateway, CollaborationService],
 })
 export class AppModule {}
