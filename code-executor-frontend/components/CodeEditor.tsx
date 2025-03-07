@@ -10,6 +10,8 @@ import { FaRegSave } from "react-icons/fa";
 import { FaShareNodes } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { BiShow } from "react-icons/bi";
+import { FcCollaboration } from "react-icons/fc";
 
 type CodeEditorProps = {
   folderId?: number;
@@ -165,6 +167,14 @@ const CodeEditor = ({
           <FaShareNodes className="text-lg" /> Share
         </button>
         <button
+        onClick={() =>  router.push("/collab")}
+         className="flex items-center gap-2 cursor-pointer bg-black hover:bg-gray-700 text-white font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
+        >
+        <FcCollaboration />
+          Code Collab
+
+        </button>
+        <button
           onClick={handleSuggest}
           className="flex items-center gap-2 cursor-pointer bg-black hover:bg-gray-700 text-white font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
         >
@@ -184,7 +194,7 @@ const CodeEditor = ({
         onClick={handleFetchedSharedCode}
         className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
         >
-          Show
+          <BiShow />
         </button>
       </div>
 

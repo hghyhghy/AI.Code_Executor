@@ -1,5 +1,5 @@
 {
-  "/execute/page": "app/execute/page.js",
   "/page": "app/page.js",
-  "/share/page": "app/share/page.js"
+  "/collab/page": "app/collab/page.js",
+  "/execute/page": "app/execute/page.js"
 }

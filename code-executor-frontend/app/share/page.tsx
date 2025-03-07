@@ -33,6 +33,13 @@ export  default  function ShareCode(){
             toast.error("Failed to share code ")
         }
     }
+
+    const handleCopy = () => {
+        if(shareLink){
+            navigator.clipboard.writeText(shareLink)
+            toast.success("Link  copied to clipboard")
+        }
+    }
     
 
     return (
@@ -76,16 +83,22 @@ export  default  function ShareCode(){
 
       {shareLink && (
 
-        <div className="mt-4 p-3 bg-green-100 border border-green-400 rounded-md">
-                      <p className="text-green-600">Share this link:</p>
+        <div className="mt-4 p-3 bg-green-100 border border-green-400 rounded-md flex items-center justify-between w-full max-w-2xl">
+                      <p className="text-green-60 break-all ">Share this link:</p>
                         <a 
                         href={shareLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 underline"
+                        className="text-blue-600 underline break-all"
                         >
                             {shareLink}
                         </a>
+                        <button
+                        onClick={handleCopy}
+                        className="ml-2 bg-gray-200 p-2 rounded-md hover:bg-gray-300 transition"
+                        >
+                            <FaRegCopy className="text-gray-700" />
+                        </button>
         </div>
       )}
         </div>
