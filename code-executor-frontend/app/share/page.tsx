@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaRegCopy } from "react-icons/fa";
 
 export  default  function ShareCode(){
     const [code, setCode] = useState("")
@@ -32,6 +33,7 @@ export  default  function ShareCode(){
             toast.error("Failed to share code ")
         }
     }
+    
 
     return (
 
