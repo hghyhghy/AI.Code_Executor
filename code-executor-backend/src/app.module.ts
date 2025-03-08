@@ -10,10 +10,11 @@ import { ShareModule } from './share/share.module';
 import { CollaborationGateway } from './collaboration/collaboration.gateway';
 import { CollaborationService } from './collaboration/collaboration.service';
 import { CollaborationModule } from './collaboration/collaboration.module';
+import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule],
   controllers: [AppController],
-  providers: [AppService, GeminiService, CollaborationGateway, CollaborationService],
+  providers: [AppService, GeminiService, CollaborationGateway, CollaborationService,PrismaService],
 })
 export class AppModule {}

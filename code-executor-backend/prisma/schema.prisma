@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,60 +7,76 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model User{
-  id Int @id @default(autoincrement())
-  name String @unique
-  email String @unique
-  password String
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  email     String    @unique
+  password  String
   executionHistories ExecutionHistory[]
-  folders Folder[]
+  folders   Folder[]
   sharedcode SharedCode[]
-
-
-  
 }
 
 model ExecutionHistory {
-
-  id        Int      @id @default(autoincrement()) // Auto-incrementing integer ID
-  userId    Int      // Store the ID of the user who executed the code
-  code      String @db.LongText()   // The executed code
-  language  String   // Programming language (Python, Node.js, Go)
-  output    String  @db.Text()  // Output from the execution // Increase column size to TEXT
+  id        Int      @id @default(autoincrement())
+  userId    Int      
+  code      String   @db.LongText()
+  language  String   
+  output    String   @db.Text()
   createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Folder {
+  id       Int      @id @default(autoincrement())
+  name     String   
+  userId   Int
+  files    File[]
   
-  // Relationship with User (Assuming you have a User model)
-  user User @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([name, userId]) // Ensures folder names are unique per user
 }
 
-model Folder{
-
-  id Int @id @default(autoincrement())
-  name String @unique
-  userId Int
-  files File[]
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model File{
-
-  id Int @id @default(autoincrement())
-  name String
-  content String @db.Text()
+model File {
+  id       Int      @id @default(autoincrement())
+  name     String
+  content  String   @db.Text()
   folderId Int
-  folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
-  @@unique([name, folderId]) // Ensure file names are unique inside a folder
+  folder   Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  @@unique([name, folderId]) // Ensures file names are unique inside a folder
 }
 
 model SharedCode {
-  id        String      @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    Int
   code      String   @db.LongText()
   language  String
   output    String?  @db.Text()
   createdAt DateTime @default(now())
 
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Room {
+  id         Int       @id @default(autoincrement())
+  roomId     String    @unique
+  createdBy  String    // Using Socket ID instead of user ID
+  createdAt  DateTime  @default(now())
+
+  users      UserRoom[]
+}
+
+model UserRoom {
+  id        Int     @id @default(autoincrement())
+  socketId  String  // Store Socket ID instead of user ID
+  roomId    Int
+  access    String  @default("read") // "read" or "write"
+
+  room      Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([socketId, roomId]) // Ensures a socket can join a room only once
 }
