@@ -11,7 +11,8 @@ import { FaShareNodes } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { BiShow } from "react-icons/bi";
-import { FcCollaboration } from "react-icons/fc";
+import { FaCode } from "react-icons/fa";
+
 
 type CodeEditorProps = {
   folderId?: number;
@@ -150,33 +151,33 @@ const CodeEditor = ({
       <div className="flex gap-3 mt-1 mb-4">
         <button
           onClick={handleSave}
-          className="flex items-center gap-2 bg-gray-100 text-black cursor-pointer hover:bg-gray-200 font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
+          className="flex items-center gap-2 bg-gray-100 text-black cursor-pointer hover:bg-gray-200 font-medium py-2 px-5 rounded shadow-md transition duration-200"
         >
           <FaRegSave /> Save
         </button>
         <button
           onClick={handleRun}
-          className="flex items-center gap-2 cursor-pointer bg-gray-100 hover:bg-gray-200 text-black font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
+          className="flex items-center gap-2 cursor-pointer bg-gray-100 hover:bg-gray-200 text-black font-medium py-2 px-5 rounded shadow-md transition duration-200"
         >
           <RxResume className="text-lg" /> Run
         </button>
         <button
           onClick={() => router.push("/share")}
-          className="flex items-center gap-2 cursor-pointer bg-gray-100 hover:bg-gray-200 text-black font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
+          className="flex items-center gap-2 cursor-pointer bg-gray-100 hover:bg-gray-200 text-black font-medium py-2 px-5 rounded shadow-md transition duration-200"
         >
           <FaShareNodes className="text-lg" /> Share
         </button>
         <button
         onClick={() =>  router.push("/collab")}
-         className="flex items-center gap-2 cursor-pointer bg-black hover:bg-gray-700 text-white font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
+         className="flex items-center gap-2 cursor-pointer bg-gray-100 hover:bg-gray-200 text-black font-medium py-2 px-5 rounded shadow-md transition duration-200"
         >
-        <FcCollaboration />
+       <FaCode />
           Code Collab
 
         </button>
         <button
           onClick={handleSuggest}
-          className="flex items-center gap-2 cursor-pointer bg-black hover:bg-gray-700 text-white font-medium py-2 px-5 rounded-lg shadow-md transition duration-200"
+          className="flex items-center gap-2 cursor-pointer bg-black hover:bg-gray-700 text-white font-medium py-2 px-5 rounded shadow-md transition duration-200"
         >
           <VscCopilot className="text-lg" /> Code Copilot
         </button>
