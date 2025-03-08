@@ -6,6 +6,7 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { CollaborationService } from './collaboration.service';
 import { PrismaService } from 'src/prisma.service';
 
 @WebSocketGateway({ cors: true })
@@ -13,105 +14,60 @@ export class CollaborationGateway {
   @WebSocketServer()
   server: Server;
 
-  private rooms: Record<string, { users: string[]; code: string }> = {};
+  private rooms: Record<string, { code: string }> = {}; // Removed 'users' since we don't track usernames
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly collaborationService: CollaborationService,
+    private prisma: PrismaService
+  ) {}
 
-  @SubscribeMessage("joinRoom")
+  @SubscribeMessage('joinRoom')
   async handleJoinRoom(
-    @MessageBody() data: { roomId: string, access:"read"|"write" },
+    @MessageBody() data: { roomId: string },
     @ConnectedSocket() client: Socket
   ) {
-    const { roomId,access } = data;
+    const { roomId } = data;
 
-    // Check if room exists in DB
+    // Check if room exists in the database
     let room = await this.prisma.room.findUnique({
-      where: { roomId }
+      where: { roomId: roomId },
     });
 
+    // If room doesn't exist, create it with Socket ID as createdBy
     if (!room) {
       room = await this.prisma.room.create({
-        data: { roomId, createdBy: client.id }
+        data: { roomId, createdBy: client.id },
       });
     }
 
-    const userRoom = await this.prisma.userRoom.upsert({
+    // Add socket ID to UserRoom table (ensuring unique entry per socket)
+    await this.prisma.userRoom.upsert({
       where: { socketId_roomId: { socketId: client.id, roomId: room.id } },
-      update: {access},
-      create: { socketId: client.id, roomId: room.id, access }
+      update: {},
+      create: { socketId: client.id, roomId: room.id },
     });
 
-    // If room doesn't exist, initialize it
+    // If room isn't already in memory, initialize it
     if (!this.rooms[roomId]) {
-      this.rooms[roomId] = { users: [], code: "" };
-    }
-
-    // Add client to users list (if not already present)
-    if (!this.rooms[roomId].users.includes(client.id)) {
-      this.rooms[roomId].users.push(client.id);
+      this.rooms[roomId] = { code: '' };
     }
 
     client.join(roomId);
-
-    // Broadcast updated user list to all clients in the room
-    this.server.to(roomId).emit("userJoined", {
-      clientId: client.id,
-      access: userRoom.access
-    });
+    console.log(`Socket ${client.id} joined room ${roomId}`);
   }
 
-  @SubscribeMessage("codeChange")
-  async handleCodeChange(
+  @SubscribeMessage('codeChange')
+  handleCodeChange(
     @MessageBody() data: { roomId: string; content: string },
     @ConnectedSocket() client: Socket
   ) {
-    const room = await this.prisma.room.findUnique({
-      where: { roomId: data.roomId }
-    });
-
-    if (!room) {
-      client.emit("error", { message: "Room not found." });
-      return;
+    if (this.rooms[data.roomId]) {
+      this.rooms[data.roomId].code = data.content; // Store latest code
     }
 
-    const userRoom = await this.prisma.userRoom.findUnique({
-      where: { socketId_roomId: { socketId: client.id, roomId: room.id } }
-    });
-
-    if (!userRoom || userRoom.access !== "write") {
-      console.log(`[CODE UPDATE DENIED] User: ${client.id} tried to update Room: ${room} but has '${userRoom?.access || "no"}' access.`);
-      client.emit("error", { message: "You do not have permission to edit the code." });
-      return;
-    }
-
-    this.server.to(data.roomId).emit("codeUpdate", {
+    this.server.to(data.roomId).emit('codeUpdate', {
       content: data.content,
-      from: client.id
-    });
-  }
-
-  @SubscribeMessage("updateAccess")
-  async handleUpdateAccess(
-    @MessageBody() data: { roomId: string; socketId: string; access: "read" | "write" },
-    @ConnectedSocket() client: Socket
-  ) {
-    const room = await this.prisma.room.findUnique({
-      where: { roomId: data.roomId }
-    });
-
-    if (!room || room.createdBy !== client.id) {
-      client.emit("error", { message: "Only the room creator can update access levels." });
-      return;
-    }
-
-    await this.prisma.userRoom.update({
-      where: { socketId_roomId: { socketId: data.socketId, roomId: room.id } },
-      data: { access: data.access }
-    });
-
-    this.server.to(data.roomId).emit("accessUpdated", {
-      socketId: data.socketId,
-      access: data.access
+      from: client.id,
     });
   }
 }
