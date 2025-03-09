@@ -209,16 +209,16 @@ const handleExecuteCode = async () => {
   setLoading(false)
 }
 
-const handleFetSuggestions =  async() => {
-  if(!editorRef.current) return
-  const code  =  editorRef.current.getValue()
-  const suggestion1 =  await  getCodeSuggestion(language,code)
-  setSuggestion(suggestion1)
-  if(suggestion1){
-    const editor   =  editorRef.current
-    editor.setValue(suggestion1)
-  }
-}
+// const handleFetSuggestions =  async() => {
+//   if(!editorRef.current) return
+//   const code  =  editorRef.current.getValue()
+//   const suggestion1 =  await  getCodeSuggestion(language,code)
+//   setSuggestion(suggestion1)
+//   if(suggestion1){
+//     const editor   =  editorRef.current
+//     editor.setValue(suggestion1)
+//   }
+// }
   return (
     <>
     <div className="flex h-screen bg-gray-900 text-white">
