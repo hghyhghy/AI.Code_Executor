@@ -9,7 +9,7 @@ import { Server, Socket } from 'socket.io';
 import { CollaborationService } from './collaboration.service';
 import { PrismaService } from 'src/prisma.service';
 
-@WebSocketGateway(4000,{ cors: true })
+@WebSocketGateway(4000,{ cors: { origin: '*' } })
 export class CollaborationGateway {
   @WebSocketServer()
   server: Server;
@@ -44,7 +44,6 @@ export class CollaborationGateway {
       }
     }
   
-    // ✅ Try inserting the user-room mapping and catch duplicates
     try {
       await this.prisma.userRoom.create({
         data: { socketId: client.id, roomId },
@@ -79,10 +78,7 @@ export class CollaborationGateway {
       this.rooms[data.roomId].code = data.content; // Store latest code
     }
      
-    this.server.to(data.roomId).emit('codeUpdate',{
-      content:data.content,
-      from:client.id
-    })
+
 
     this.server.in(data.roomId).emit('codeUpdate', {
       content: data.content,
