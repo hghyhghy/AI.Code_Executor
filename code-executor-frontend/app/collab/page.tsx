@@ -245,7 +245,7 @@ const handleExecuteCode = async () => {
 
       <div className="w-[29rem] h-screen bg-gray-800 p-4 flex flex-col space-y-6 shadow-lg">
         <div className="p-4 bg-gray-700 rounded-lg text-center">
-          <p className="text-gray-300">Room ID:</p>
+          <p className="text-gray-300">Room ID</p>
           <div className="relative mt-2 flex items-center justify-center">
           <button
               onClick={handleCopyRoomId}
