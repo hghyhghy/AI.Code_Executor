@@ -17,6 +17,18 @@ const languages = [
   { name: "Go", value: "go" },
 ];
 
+const themes  = [
+  {name:"Dark", value:"vs-dark",
+
+  },
+  {
+    name:"Light", value:"light"
+  },
+  {
+    name:"High Contrast",value:"hc-black"
+  }
+]
+
 export default function CollabPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -32,6 +44,7 @@ export default function CollabPage() {
   const [access, setAccess] = useState<"read"|"write">("read")
   const [isRoomCreator, setIsRoomCreator] = useState<boolean>(false)
   const [isCreatingRoom, setIsCreatingRoom] = useState(false); // New state
+  const [theme, setTheme] = useState<string>("vs-dark")
 
 
   const editorRef = useRef<any>(null);
@@ -120,14 +133,14 @@ export default function CollabPage() {
 
       if (content !== lastContentRef.current) {
         lastContentRef.current = content;
-        socket.emit("codeChange", { roomId, content });
+        socket.emit("codeChange", { roomId:roomId, content:content });
       }
     });
   };
 
   const handleLanguageChange = (newLanguage: string) => {
     setLanguage(newLanguage);
-    socket.emit("changeLanguage", { roomId, language: newLanguage });
+    socket.emit("changeLanguage", { roomId:roomId, language: newLanguage });
   };
 
 
@@ -187,7 +200,7 @@ const handleConfirmRoom = () => {
       <div className="flex-1 p-4">
       <Editor
           height="100%"
-          theme="vs-dark"
+          theme={theme}
           language={language}
           defaultValue=""
           onMount={handleEditorDidMount}
@@ -208,14 +221,14 @@ const handleConfirmRoom = () => {
           <p className="text-gray-300">Room ID:</p>
           <div className="relative mt-2 flex items-center justify-center">
           <button
-  onClick={handleCopyRoomId}
-  className="w-full bg-gray-600 p-2 rounded-md hover:bg-gray-500 transition relative group cursor-copy"
->
-  {showRoomId ? roomId : "****"}
-  <span className="absolute -top-14 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
-    {copyTooltip}
-  </span>
-</button>
+              onClick={handleCopyRoomId}
+              className="w-full bg-gray-600 p-2 rounded-md hover:bg-gray-500 transition relative group cursor-copy"
+            >
+              {showRoomId ? roomId : "****"}
+              <span className="absolute -top-14 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
+                {copyTooltip}
+              </span>
+            </button>
             <button onClick={toggleRoomIdVisibility} className="absolute right-3 text-gray-400 hover:text-white transition">
               {showRoomId ? <FaEyeSlash /> : <FaEye />}
             </button>
@@ -232,6 +245,26 @@ const handleConfirmRoom = () => {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className=" p-6 bg-gray-800 rounded">
+        <h1 className="text-2xl mb-3 flex items-center justify-center">Theme</h1>
+
+        <div className=" flex flex-col space-y-2">
+              {themes.map((t) =>  (
+
+                <button
+                key={t.value}
+                onClick={()=> setTheme(t.value)}
+                className={`py-2 rounded font-medium transition duration-200 cursor-pointer ${
+                  theme === t.value ? "bg-blue-600 text-white shadow-md" : "bg-gray-600 text-gray-300 hover:bg-gray-500"
+                }`}
+                >
+                    {t.name}
+                </button>
+              ))}
+        </div>
+
         </div>
 
 
