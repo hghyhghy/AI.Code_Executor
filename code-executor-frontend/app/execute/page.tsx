@@ -31,7 +31,7 @@ export default function ExecuteCode() {
   const [showModal, setShowModal] = useState(false)
   const [expandedFolders, setExpandedFolders] = useState([{}])
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const API_URL = "http://localhost:3001/folder";
+  const API_URL = "http://localhost:3001";
   const API_URL1 = "http://localhost:3001";
   useEffect(() => {
     if (selectedFile) {
@@ -72,7 +72,7 @@ export default function ExecuteCode() {
 
   async function fetchFolders() {
     try {
-      const res = await fetch(`${API_URL}/find`, {
+      const res = await fetch(`${API_URL}/folder/find`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -237,7 +237,7 @@ export default function ExecuteCode() {
     if (!folderName.trim()) return alert("Folder name cannot be empty");
     setCreating(true);
     try {
-      const res = await fetch(`${API_URL}/create`, {
+      const res = await fetch(`${API_URL}/folder/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -260,7 +260,7 @@ export default function ExecuteCode() {
   async function deleteFolder(folderId: number) {
     if (!confirm("Are you sure you want to delete this folder?")) return;
     try {
-      const res = await fetch(`${API_URL}/delete/${folderId}`, {
+      const res = await fetch(`${API_URL}/folder/delete/${folderId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

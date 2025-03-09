@@ -6,7 +6,7 @@ import io from "socket.io-client";
 import dynamic from "next/dynamic";
 import { FaCode, FaEye, FaEyeSlash } from "react-icons/fa";
 
-const socket = io("http://localhost:3001"); // Adjust backend URL as needed
+const socket = io("http://localhost:4000"); // Adjust backend URL as needed
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
 const generateRoomId = () => Math.random().toString(36).substring(2, 6);
@@ -45,6 +45,7 @@ export default function CollabPage() {
   const [isRoomCreator, setIsRoomCreator] = useState<boolean>(false)
   const [isCreatingRoom, setIsCreatingRoom] = useState(false); // New state
   const [theme, setTheme] = useState<string>("vs-dark")
+  
 
 
   const editorRef = useRef<any>(null);
@@ -140,7 +141,7 @@ export default function CollabPage() {
 
   const handleLanguageChange = (newLanguage: string) => {
     setLanguage(newLanguage);
-    socket.emit("changeLanguage", { roomId:roomId, language: newLanguage });
+    socket.emit("changeLanguage", { roomId, language: newLanguage });
   };
 
 
@@ -216,7 +217,7 @@ const handleConfirmRoom = () => {
         />
       </div>
 
-      <div className="w-96 h-screen bg-gray-800 p-4 flex flex-col space-y-6 shadow-lg">
+      <div className="w-[29rem] h-screen bg-gray-800 p-4 flex flex-col space-y-6 shadow-lg">
         <div className="p-4 bg-gray-700 rounded-lg text-center">
           <p className="text-gray-300">Room ID:</p>
           <div className="relative mt-2 flex items-center justify-center">
@@ -236,7 +237,7 @@ const handleConfirmRoom = () => {
           
         </div>
 
-        <div className="p-6 bg-gray-800 rounded-lg">
+        <div className="p-20 bg-gray-800 rounded-lg">
           <h1 className="text-2xl mb-3 flex items-center justify-center"><FaCode /></h1>
           <div className="flex flex-col space-y-2">
             {languages.map((lang) => (
@@ -246,26 +247,31 @@ const handleConfirmRoom = () => {
             ))}
           </div>
         </div>
+        <h3 className="text-lg mb-3 flex items-center justify-center">Choose  Theme</h3>
+        <div className="flex flex-row gap-5">
+  {themes.map((t) => (
+    <button
+      key={t.value}
+      onClick={() => setTheme(t.value)}
+      className={`flex items-center gap-3 px-5 py-2 rounded font-medium transition duration-200 cursor-pointer ${
+        theme === t.value ? "bg-blue-600 text-white shadow-md" : "bg-gray-600 text-gray-300 hover:bg-gray-500"
+      }`}
+    >
+      {/* Radio Circle */}
+      <div
+        className={`w-5 h-5 flex items-center justify-center border-2 rounded-full ${
+          theme === t.value ? "border-white bg-white" : "border-gray-400"
+        }`}
+      >
+        {theme === t.value && <div className="w-3 h-3 bg-blue-600 rounded-full"></div>}
+      </div>
 
-        <div className=" p-6 bg-gray-800 rounded">
-        <h1 className="text-2xl mb-3 flex items-center justify-center">Theme</h1>
+      {/* Theme Name */}
+      <span>{t.name}</span>
+    </button>
+  ))}
+</div>
 
-        <div className=" flex flex-col space-y-2">
-              {themes.map((t) =>  (
-
-                <button
-                key={t.value}
-                onClick={()=> setTheme(t.value)}
-                className={`py-2 rounded font-medium transition duration-200 cursor-pointer ${
-                  theme === t.value ? "bg-blue-600 text-white shadow-md" : "bg-gray-600 text-gray-300 hover:bg-gray-500"
-                }`}
-                >
-                    {t.name}
-                </button>
-              ))}
-        </div>
-
-        </div>
 
 
 
