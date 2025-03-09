@@ -12,7 +12,7 @@
 
 # next.js
 /out/
-.next  
+/.next/ 
 # Added to ignore Next.js build directory
 # testing
 /coverage
