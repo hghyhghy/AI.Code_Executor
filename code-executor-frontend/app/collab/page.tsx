@@ -5,6 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import io from "socket.io-client";
 import dynamic from "next/dynamic";
 import { FaCode, FaEye, FaEyeSlash } from "react-icons/fa";
+import { executeCode,getCodeSuggestion } from "@/lib/api";
+import { RxResume } from "react-icons/rx";
+
 
 const socket = io("http://localhost:4000"); // Adjust backend URL as needed
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
@@ -45,8 +48,9 @@ export default function CollabPage() {
   const [isRoomCreator, setIsRoomCreator] = useState<boolean>(false)
   const [isCreatingRoom, setIsCreatingRoom] = useState(false); // New state
   const [theme, setTheme] = useState<string>("vs-dark")
-  
-
+  const [outPut, setOutPut] = useState<string>("")
+  const [suggestion, setSuggestion] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(false)
 
   const editorRef = useRef<any>(null);
   const lastContentRef = useRef<string>("");
@@ -196,7 +200,27 @@ const handleConfirmRoom = () => {
   socket.emit("joinRoom", { roomId: newRoomId, access });
 };
 
+const handleExecuteCode = async () => {
+  if(!editorRef.current) return
+  setLoading(true)
+  const code  =  editorRef.current.getValue()
+  const result  =  await executeCode(code,language)
+  setOutPut(result)
+  setLoading(false)
+}
+
+const handleFetSuggestions =  async() => {
+  if(!editorRef.current) return
+  const code  =  editorRef.current.getValue()
+  const suggestion1 =  await  getCodeSuggestion(language,code)
+  setSuggestion(suggestion1)
+  if(suggestion1){
+    const editor   =  editorRef.current
+    editor.setValue(suggestion1)
+  }
+}
   return (
+    <>
     <div className="flex h-screen bg-gray-900 text-white">
       <div className="flex-1 p-4">
       <Editor
@@ -216,6 +240,8 @@ const handleConfirmRoom = () => {
           }}
         />
       </div>
+
+
 
       <div className="w-[29rem] h-screen bg-gray-800 p-4 flex flex-col space-y-6 shadow-lg">
         <div className="p-4 bg-gray-700 rounded-lg text-center">
@@ -271,6 +297,20 @@ const handleConfirmRoom = () => {
     </button>
   ))}
 </div>
+
+<div className="flex space-x-3">
+          <button
+            onClick={handleExecuteCode}
+            className="bg-blue-600 px-4 py-2 rounded-md flex items-center space-x-2 hover:bg-blue-700 transition"
+          >
+            <RxResume /> <span>Run</span>
+          </button>
+          
+
+
+
+        </div>
+
 
 
 
@@ -350,5 +390,15 @@ const handleConfirmRoom = () => {
 
 
     </div>
-  );
+    
+  
+  <div className="bg-gray-700 p-3 rounded-md h-40 overflow-auto">
+          <h3 className="text-lg mb-2">Output:</h3>
+          <pre className="text-green-400 whitespace-pre-wrap">
+            {loading ? "Running..." : outPut || "No output yet"}
+          </pre>
+        </div>
+</>
+)
+
 }
