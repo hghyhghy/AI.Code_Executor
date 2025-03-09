@@ -16,7 +16,7 @@ export class FolderController {
         try {
 
             const userId = (req.user as any)?.id;
-            const folder =  await this.folderService.createFolder(body.name,userId)
+            const folder =  await this.folderService.createFolder(body.name,Number(userId))
             return { message: 'Folder created successfully', folder };
             
         } 
@@ -32,7 +32,7 @@ export class FolderController {
         try {
 
             const userId =  (req.user as any)?.id
-            const folders =  await this.folderService.getFolders(userId)
+            const folders =  await this.folderService.getFolders(Number(userId))
             return { message: 'Folders retrieved successfully', folders };
         }
          catch (error) {

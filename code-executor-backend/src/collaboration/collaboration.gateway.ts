@@ -9,7 +9,7 @@ import { Server, Socket } from 'socket.io';
 import { CollaborationService } from './collaboration.service';
 import { PrismaService } from 'src/prisma.service';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway(4000,{ cors: true })
 export class CollaborationGateway {
   @WebSocketServer()
   server: Server;
@@ -21,40 +21,54 @@ export class CollaborationGateway {
     private prisma: PrismaService
   ) {}
 
+
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(
     @MessageBody() data: { roomId: string },
     @ConnectedSocket() client: Socket
   ) {
     const { roomId } = data;
-
-    // Check if room exists in the database
-    let room = await this.prisma.room.findUnique({
-      where: { roomId: roomId },
-    });
-
-    // If room doesn't exist, create it with Socket ID as createdBy
+  
+    // Ensure the room exists
+    let room = await this.prisma.room.findUnique({ where: { roomId } });
+  
     if (!room) {
-      room = await this.prisma.room.create({
-        data: { roomId, createdBy: client.id },
-      });
+      try {
+        room = await this.prisma.room.create({ data: { roomId, createdBy: client.id } });
+      } catch (error) {
+        if (error.code === 'P2002') {
+          room = await this.prisma.room.findUnique({ where: { roomId } });
+        } else {
+          throw error;
+        }
+      }
     }
-
-    // Add socket ID to UserRoom table (ensuring unique entry per socket)
-    await this.prisma.userRoom.upsert({
-      where: { socketId_roomId: { socketId: client.id, roomId: room.id } },
-      update: {},
-      create: { socketId: client.id, roomId: room.id },
-    });
-
-    // If room isn't already in memory, initialize it
+  
+    // ✅ Try inserting the user-room mapping and catch duplicates
+    try {
+      await this.prisma.userRoom.create({
+        data: { socketId: client.id, roomId },
+      });
+    } catch (error) {
+      if (error.code !== 'P2002') throw error; // Ignore duplicate entry errors
+    }
+  
+    // Initialize room in memory if not present
     if (!this.rooms[roomId]) {
       this.rooms[roomId] = { code: '' };
     }
-
+  
     client.join(roomId);
     console.log(`Socket ${client.id} joined room ${roomId}`);
+
+    client.emit("codeUpdate",{
+      content:this.rooms[roomId].code,
+      from:client.id
+    })
   }
+  
+  
+  
 
   @SubscribeMessage('codeChange')
   handleCodeChange(
@@ -64,8 +78,13 @@ export class CollaborationGateway {
     if (this.rooms[data.roomId]) {
       this.rooms[data.roomId].code = data.content; // Store latest code
     }
+     
+    this.server.to(data.roomId).emit('codeUpdate',{
+      content:data.content,
+      from:client.id
+    })
 
-    this.server.to(data.roomId).emit('codeUpdate', {
+    this.server.in(data.roomId).emit('codeUpdate', {
       content: data.content,
       from: client.id,
     });

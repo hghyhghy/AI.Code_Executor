@@ -73,10 +73,10 @@ model Room {
 model UserRoom {
   id        Int     @id @default(autoincrement())
   socketId  String  // Store Socket ID instead of user ID
-  roomId    Int
+  roomId     String
   access    String  @default("read") // "read" or "write"
 
-  room      Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room      Room    @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
 
   @@unique([socketId, roomId]) // Ensures a socket can join a room only once
 }
