@@ -8,7 +8,7 @@ export class ExecutionHistoryService {
     constructor(private prisma:PrismaService){}
 
     async  getExecutionHistory(userId:number){
-        return await this.prisma.executionHistory.findMany({
+        return  await this.prisma.executionHistory.findMany({
 
             where:{
                 userId:Number(userId)
@@ -16,7 +16,15 @@ export class ExecutionHistoryService {
 
             orderBy:{
                 createdAt:'desc'
+            },
+            include:{
+                user:{
+                    select:{
+                        name:true
+                    }
+                }
             }
         })
+
     }
 }
