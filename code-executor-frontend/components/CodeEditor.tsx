@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { BiShow } from "react-icons/bi";
 import { FaCode } from "react-icons/fa";
-
+import { GrTransaction } from "react-icons/gr";
 
 type CodeEditorProps = {
   folderId?: number;
@@ -173,6 +173,14 @@ const CodeEditor = ({
         >
        <FaCode />
           Code Collab
+
+        </button>
+        <button
+        onClick={() =>  router.push("/history")}
+         className="flex items-center gap-2 cursor-pointer bg-gray-100 hover:bg-gray-200 text-black font-medium py-2 px-5 rounded shadow-md transition duration-200"
+        >
+       <GrTransaction />
+          History
 
         </button>
         <button
