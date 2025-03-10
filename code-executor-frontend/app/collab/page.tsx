@@ -183,21 +183,15 @@ export default function CollabPage() {
   };
   
 
-  const handleAccessChange = (socketId:string,  newAccess:"read"|"write") => {
-    socket.emit("updateAccess", {roomId,socketId,access:newAccess})
-  }
 
-const handleCreateRoomClick = () => {
-  setIsRoomCreator(true);
-  setIsCreatingRoom(true); // Now we are in the room creation process
-};
+
 const handleConfirmRoom = () => {
   const newRoomId = generateRoomId();
   setRoomId(newRoomId);
   setShowModal(false);
   router.push(`/collab?roomId=${newRoomId}`);
 
-  socket.emit("joinRoom", { roomId: newRoomId, access });
+  socket.emit("joinRoom", { roomId: newRoomId });
 };
 
 const handleExecuteCode = async () => {
@@ -209,16 +203,7 @@ const handleExecuteCode = async () => {
   setLoading(false)
 }
 
-// const handleFetSuggestions =  async() => {
-//   if(!editorRef.current) return
-//   const code  =  editorRef.current.getValue()
-//   const suggestion1 =  await  getCodeSuggestion(language,code)
-//   setSuggestion(suggestion1)
-//   if(suggestion1){
-//     const editor   =  editorRef.current
-//     editor.setValue(suggestion1)
-//   }
-// }
+
 return (
   <div className="flex h-screen overflow-hidden bg-gray-900 text-white">
     {/* Left side: Editor */}
@@ -250,7 +235,7 @@ return (
     </div>
 
     {/* Right side: Sidebar */}
-    <div className="w-[25rem] h-screen bg-gray-800 p-4 flex flex-col space-y-6 shadow-lg shrink-0">
+    <div className="w-[29rem] h-screen bg-gray-800 p-4 flex flex-col space-y-6 shadow-lg shrink-0">
       {/* Room ID Box */}
       <div className="p-4 bg-gray-700 rounded-lg text-center">
         <p className="text-gray-300">Room ID</p>
@@ -326,41 +311,71 @@ return (
 
     {/* Modal for Room Joining */}
     {showModal && (
-      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50">
-        <div className="bg-gray-100 p-6 rounded-xl shadow-xl w-96 text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            {isRoomCreator && isCreatingRoom ? "Set Room Access" : "Join a Room"}
-          </h2>
-          {!isRoomCreator && !isCreatingRoom && (
-            <>
-              <input
+  <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-30 border border-blue-950">
+    <div className="bg-white p-6 rounded-2xl shadow-2xl w-[400px]">
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">Code Collab Powered By Ai.Editor</h2>
+
+      {/* Roles Section */}
+      <div className="text-left">
+        <label className="text-sm text-gray-600">Roles</label>
+        <p className="text-xs text-gray-500 mb-2">
+          Access limited to everyone of select role(s)
+        </p>
+
+        {/* Invite Dropdown */}
+        <div className="flex items-center border rounded-lg px-3 py-2 mb-4">
+        <input
                 type="text"
                 placeholder="Enter Room ID"
                 value={inputRoomId}
                 onChange={(e) => setInputRoomId(e.target.value)}
-                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 rounded-lg bg-gray-200 text-black border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <button
-                onClick={handleJoinRoom}
-                className="w-full bg-blue-500 hover:bg-blue-600 py-2 rounded-lg mt-3"
-              >
-                Join Room
-              </button>
-            </>
-          )}
-          <div className="flex gap-3 mt-4">
-            {!isCreatingRoom && (
-              <button
-                onClick={handleCreateRoomClick}
-                className="w-1/2 bg-green-500 hover:bg-green-600 py-2 rounded-lg"
-              >
-                Create New Room
-              </button>
-            )}
-          </div>
+
         </div>
+
+        {/* Role Checkboxes */}
+        {[
+          { role: "Makers", desc: "Everyone assigned the maker role", avatars: true },
+          { role: "Contributors", desc: "Everyone assigned the contributor role", avatars: false },
+          { role: "Viewers", desc: "Everyone assigned the viewer role", avatars: false },
+        ].map(({ role, desc, avatars }) => (
+          <label key={role} className="flex items-center gap-3 mb-3">
+            <input type="checkbox" className="accent-blue-500 w-5 h-5" defaultChecked />
+            <div>
+              <p className="text-gray-700 font-medium">{role}</p>
+              <p className="text-gray-500 text-sm">{desc}</p>
+            </div>
+            {/* {avatars && (
+              <div className="flex -space-x-2">
+                <img className="w-6 h-6 rounded-full border" src="/avatar1.png" alt="User" />
+                <img className="w-6 h-6 rounded-full border" src="/avatar2.png" alt="User" />
+                <img className="w-6 h-6 rounded-full border" src="/avatar3.png" alt="User" />
+              </div>
+            )} */}
+          </label>
+        ))}
       </div>
-    )}
+
+      {/* Buttons */}
+      <div className="flex justify-center gap-5 mt-4">
+  <button
+    onClick={handleJoinRoom}
+    className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded text-sm cursor-pointer"
+  >
+    Join Room
+  </button>
+  <button
+    onClick={handleConfirmRoom}
+    className="bg-blue-800 hover:bg-blue-800 text-white py-3 px-4 rounded text-sm cursor-pointer"
+  >
+    Create New Room
+  </button>
+</div>
+    </div>
+  </div>
+)}
+
   </div>
 );
 
