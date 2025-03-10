@@ -8,6 +8,7 @@ import { IoAdd } from "react-icons/io5";
 import { CiFileOn } from "react-icons/ci";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { IoIosAddCircleOutline } from "react-icons/io";
+import { HiArrowTurnDownRight } from "react-icons/hi2";
 
 export default function ExecuteCode() {
   const [folders, setFolders] = useState<{ id: number; name: string }[]>([]);
@@ -17,6 +18,7 @@ export default function ExecuteCode() {
   const [showFolders, setShowFolders] = useState(true);
   const [files, setFiles] = useState<{ name: string }[]>([])
   const [fileName, setFileName] = useState("")
+  const [rightClickedFile, setRightClickedFile] = useState<string | null>(null)
   interface File {
     id: number;
     folderId: number;
@@ -276,6 +278,11 @@ export default function ExecuteCode() {
       console.error("Error deleting folder:", error);
     }
   }
+
+  const handleRightClick = (e: React.MouseEvent, fileName: string) => {
+      e.preventDefault()
+      setRightClickedFile((prev) => (prev === fileName ? null: fileName))
+  }
   
 
   return (
@@ -374,29 +381,36 @@ export default function ExecuteCode() {
 
     {/* Files List */}
     {expandedFolders[folder.id] && (
-      <ul className="pl-10 py-2 bg-gray-800 rounded">
-        {files?.length === 0 && <p className="text-gray-400">No files found.</p>}
-        {files?.map((file) => (
-          <li
-            key={file.name}
-            className="p-2 flex items-center cursor-pointer hover:bg-gray-500"
-            onClick={() => openFile(folder.id, file.name)}
+  <ul className="pl-10 py-2 bg-gray-800 rounded">
+    {files?.length === 0 && <p className="text-gray-400">No files found.</p>}
+    {files?.map((file) => (
+      <li
+        key={file.name}
+        className="p-2 flex items-center cursor-pointer hover:bg-gray-600 relative"
+        onClick={() => openFile(folder.id, file.name)}
+        onContextMenu={(e) => handleRightClick(e, file.name)} // Right-click event
+      >
+        <HiArrowTurnDownRight />
+        <CiFileOn className="text-2xl" />
+        <span className="ml-2">{file.name}</span>
+
+        {/* Show delete button only if right-clicked */}
+        {rightClickedFile === file.name && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteFile(folder.id, file.name);
+              setRightClickedFile(null); // Reset after delete
+            }}
+            className="px-3 py-1 text-white rounded flex items-center ml-auto cursor-pointer"
           >
-            <CiFileOn className="text-2xl" />
-            <span className="ml-2">{file.name}</span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteFile(folder.id, file.name);
-              }}
-              className="px-3 py-1 text-white rounded hover:bg-red-600 flex items-center ml-auto"
-            >
-              <RiDeleteBin6Fill />
-            </button>
-          </li>
-        ))}
-      </ul>
-    )}
+            <RiDeleteBin6Fill />
+          </button>
+        )}
+      </li>
+    ))}
+  </ul>
+)}
   </div>
 ))}
 
