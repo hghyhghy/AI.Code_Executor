@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { GrPrevious } from "react-icons/gr";
 import { GrNext } from "react-icons/gr";
+import { useRouter } from "next/navigation";
+import { FaCode } from "react-icons/fa";
 
 interface ExecutionHistory {
   id: number;
@@ -20,6 +22,8 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [redirect, setRedirect] = useState(false)
+  const router = useRouter()
   useEffect(() => {
     const fetchHistory = async () => {
       try {
@@ -54,13 +58,16 @@ export default function HistoryPage() {
         setCurrentIndex((prev) => prev-1)
     }
   }
-
+  const handleRedirect = ()=> {
+    if(redirect){
+        router.push("/execute")
+    }
+  }
   // Get the user's name from the first history entry (since it's the same for all)
   const username = history.length > 0 ? history[0].user.name : "";
 
   return (
     <div className="min-h-screen bg-gray-200 text-black flex flex-col items-center p-3 w-full">
-      {username && <h1 className="text-2xl font-semibold mb-6">Execution History of {username}</h1>}
 
       {loading && <p className="text-gray-400">Loading history...</p>}
       {error && <p className="text-red-500">{error}</p>}
@@ -71,12 +78,13 @@ export default function HistoryPage() {
 
       {history.length > 0 && (
         <>  
-    <div className="w-full max-w-5xl bg-white rounded shadow-lg text-black  border-b-neutral-950 mb-5 flex flex-row items-start justify-start">
+    <div className="w-full max-w-5xl bg-white rounded shadow-lg text-black  border-b-neutral-950 mb-5 flex flex-row items-start justify-start mt-10">
 
-        
-                  <div className="flex justify-start mb-4 gap-3 py-3 px-3 top-2 relative">
+         <div className=" flex flex-row justify-evenly">
+
+            <div className="flex justify-start mb-4 gap-3 py-3 px-3 top-2 relative">
                   <button 
-                    className={` cursor-pointer px-6 py-2 rounded  flex flex-row items-center justify-center  ${currentIndex === 0 ? 'bg-blue-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-500'}`}
+                    className={` cursor-pointer text-white gap-2  px-6 py-2 rounded  flex flex-row items-center justify-center  ${currentIndex === 0 ? 'bg-blue-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-500'}`}
                     onClick={prevEntry}
                     disabled={currentIndex === 0}
                   >
@@ -86,7 +94,7 @@ export default function HistoryPage() {
                     Prev
                   </button>
                   <button 
-                    className={` cursor-pointer px-6 py-2 rounded  flex flex-row items-center justify-center ${currentIndex === history.length - 1 ? 'bg-blue-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-500'}`}
+                    className={` cursor-pointer text-white px-6 py-2 gap-2 rounded  flex flex-row items-center justify-center ${currentIndex === history.length - 1 ? 'bg-blue-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-500'}`}
                     onClick={nextEntry}
                     disabled={currentIndex === history.length - 1}
                   >
@@ -95,7 +103,34 @@ export default function HistoryPage() {
                       className="font-bold text-white text-1xl"
                       />
                   </button>
+
+                {username && <h1 className="text-1xl text-sm font-semibold  mt-3  uppercase ">Execution History of <span className="text-blue-400">{username}</span></h1>}
+
                 </div>
+<div className="relative  ml-80 flex flex-row items-center gap-3 ">
+      {/* Radio Button */}
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="radio"
+          checked={redirect}
+          onChange={() => setRedirect(!redirect)}
+          className="w-4 h-4 cursor-pointer accent-blue-500"
+        />
+              <button
+        className={`cursor-pointer border border-blue-500  text-black gap-2 px-3 py-2 rounded flex flex-row items-center justify-center ${
+          currentIndex === 0 ? "bg-transparent cursor-not-allowed" : "bg-transparent hover:bg-transparent"
+        }`}
+        onClick={handleRedirect}
+      >
+        <FaCode className="font-bold text-black text-1xl" />
+        Execute
+      </button>
+      </label>
+
+    </div>
+         </div>
+
+                
 
         </div>
             
