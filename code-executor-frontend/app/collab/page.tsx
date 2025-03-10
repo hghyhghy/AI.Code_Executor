@@ -51,6 +51,7 @@ export default function CollabPage() {
   const [outPut, setOutPut] = useState<string>("")
   const [suggestion, setSuggestion] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState("")
 
   const editorRef = useRef<any>(null);
   const lastContentRef = useRef<string>("");
@@ -160,7 +161,10 @@ export default function CollabPage() {
   };
 
   const handleJoinRoom = () => {
-    if (!inputRoomId.trim()) return alert("Please enter a valid Room ID!");
+    if (!inputRoomId.trim()){
+      setError('Please Enter roomId to  proceed')
+      return
+    }
     setRoomId(inputRoomId);
     router.push(`/collab?roomId=${inputRoomId}`);
     socket.emit("joinRoom", { roomId: inputRoomId });
@@ -326,7 +330,7 @@ return (
         <div className="flex items-center border rounded-lg px-3 py-2 mb-4">
         <input
                 type="text"
-                placeholder="Enter Room ID"
+                placeholder={error ? "Error: " + error : "Enter your roomId"}
                 value={inputRoomId}
                 onChange={(e) => setInputRoomId(e.target.value)}
                 className="w-full p-3 rounded-lg bg-gray-200 text-black border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
