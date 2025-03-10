@@ -209,9 +209,9 @@ const handleExecuteCode = async () => {
 
 
 return (
-  <div className="flex h-screen overflow-hidden bg-gray-900 text-white">
+  <div className="flex h-screen  bg-gray-900 text-white">
     {/* Left side: Editor */}
-    <div className="flex-1 p-4 overflow-hidden">
+    <div className="flex-1 p-4 ">
       <Editor
         height="100%"
         theme={theme}
@@ -230,13 +230,14 @@ return (
         }}
       />
       {/* Output Box - Now inside the layout properly */}
-      <div className="bg-gray-700 p-3 rounded-md h-40 overflow-auto mt-4">
+      <div className="bg-gray-700 p-3 rounded-md h-40  overflow-y-auto mt-4 w-full">
         <h3 className="text-lg mb-2">Output:</h3>
         <pre className="text-green-400 whitespace-pre-wrap">
           {loading ? "Running..." : outPut || "No output yet"}
         </pre>
       </div>
     </div>
+
 
     {/* Right side: Sidebar */}
     <div className="w-[29rem] h-screen bg-gray-800 p-4 flex flex-col space-y-6 shadow-lg shrink-0">
