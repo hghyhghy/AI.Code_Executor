@@ -345,7 +345,7 @@ return (
           { role: "Viewers", desc: "Everyone assigned the viewer role", avatars: false },
         ].map(({ role, desc, avatars }) => (
           <label key={role} className="flex items-center gap-3 mb-3">
-            <input type="checkbox" className="accent-blue-500 w-5 h-5" defaultChecked />
+            <input type="radio" className="accent-blue-500 w-5 h-5" defaultChecked />
             <div>
               <p className="text-gray-700 font-medium">{role}</p>
               <p className="text-gray-500 text-sm">{desc}</p>
