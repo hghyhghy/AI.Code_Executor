@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import io from "socket.io-client";
 import dynamic from "next/dynamic";
@@ -13,6 +13,13 @@ const socket = io("http://localhost:4000"); // Adjust backend URL as needed
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
 const generateRoomId = () => Math.random().toString(36).substring(2, 6);
+export default function CollabPageContent() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CollabPageContent />
+    </Suspense>
+  );
+}
 
 const languages = [
   { name: "JavaScript", value: "javascript" },
@@ -32,7 +39,7 @@ const themes  = [
   }
 ]
 
-export default function CollabPage() {
+function CollabPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
