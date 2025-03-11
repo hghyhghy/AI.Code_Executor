@@ -4,7 +4,7 @@ import axios from "axios";
 import { GrPrevious } from "react-icons/gr";
 import { GrNext } from "react-icons/gr";
 import { useRouter } from "next/navigation";
-import { FaCode } from "react-icons/fa";
+import { FaCode, FaTrashAlt } from "react-icons/fa";
 
 interface ExecutionHistory {
   id: number;
@@ -23,6 +23,8 @@ export default function HistoryPage() {
   const [error, setError] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0)
   const [redirect, setRedirect] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
   const router = useRouter()
   useEffect(() => {
     const fetchHistory = async () => {
@@ -37,6 +39,7 @@ export default function HistoryPage() {
         });
 
         setHistory(data);
+        setCurrentIndex(0)
       } catch (err: any) {
         setError(err.response?.data?.message || err.message);
       } finally {
@@ -47,6 +50,45 @@ export default function HistoryPage() {
     fetchHistory();
   }, []);
 
+  const deleteSpecificHistory = async (entryId:Number) => {
+    try {
+      setDeleting(true)
+      const token  =  localStorage.getItem("token")
+      await axios.delete(`http://localhost:3001/execution-history/delete/${entryId}`,{
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      const updatehistory =  history.filter(entry =>  entry.id  !== entryId)
+      setHistory(updatehistory)
+      setCurrentIndex(prev =>  (prev >= updatehistory.length -1  ?  prev-1: prev))
+
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message);
+    } finally {
+      setDeleting(false);
+    }
+  }
+  const deleteallhistory=async() => {
+    try {
+      setDeleting(true)
+
+      const token  = localStorage.getItem("token")
+      await axios.delete("http://localhost:3001/execution-history/delete-all",{
+        headers:{
+
+          Authorization:`Bearer ${token}`
+        }
+      });
+      setHistory([])
+      setCurrentIndex(0)
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message);
+    } finally {
+      setDeleting(false);
+    }
+  }
   const  nextEntry =()=>{
     if(currentIndex <  history.length -1){
         setCurrentIndex((prev) =>  prev+1)
@@ -78,7 +120,7 @@ export default function HistoryPage() {
 
       {history.length > 0 && (
         <>  
-    <div className="w-full max-w-5xl bg-white rounded shadow-lg text-black  border-b-neutral-950 mb-5 flex flex-row items-start justify-start mt-10">
+    <div className="w-full bg-white rounded shadow-lg text-black  border-b-neutral-950 mb-5 flex flex-row items-start justify-start mt-10">
 
          <div className=" flex flex-row justify-evenly">
 
@@ -107,27 +149,48 @@ export default function HistoryPage() {
                 {username && <h1 className="text-1xl text-sm font-semibold  mt-3  uppercase ">Execution History of <span className="text-blue-400">{username}</span></h1>}
 
                 </div>
-<div className="relative  ml-80 flex flex-row items-center gap-3 ">
-      {/* Radio Button */}
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="radio"
-          checked={redirect}
-          onChange={() => setRedirect(!redirect)}
-          className="w-4 h-4 cursor-pointer accent-blue-500"
-        />
-              <button
-        className={`cursor-pointer border border-blue-500  text-black gap-2 px-3 py-2 rounded flex flex-row items-center justify-center ${
-          currentIndex === 0 ? "bg-transparent cursor-not-allowed" : "bg-transparent hover:bg-transparent"
-        }`}
-        onClick={handleRedirect}
-      >
-        <FaCode className="font-bold text-black text-1xl" />
-        Execute
-      </button>
-      </label>
+                <div className="relative ml-80 flex flex-wrap items-center justify-between gap-5   px-6 py-3 bg-white shadow-md rounded-md">
+  
+  {/* Delete Specific Entry */}
+                            <button
+                              className="px-4 py-2 flex items-center gap-2 bg-[#2F2078] text-white rounded  disabled:bg-red-300"
+                              onClick={() => deleteSpecificHistory(history[currentIndex]?.id)}
+                              disabled={deleting}
+                            >
+                              <FaTrashAlt /> {deleting ? "Deleting..." : "Delete This"}
+                            </button>
 
-    </div>
+                            {/* Delete All Entries */}
+                            <button
+                              className="px-4 py-2 flex items-center gap-2 bg-[#2F2078] text-white rounded disabled:bg-red-400"
+                              onClick={deleteallhistory}
+                              disabled={deleting}
+                            >
+                              <FaTrashAlt /> {deleting ? "Deleting..." : "Delete All"}
+                            </button>
+
+                            {/* Execution Redirect */}
+                            <div className="flex items-center gap-3">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  checked={redirect}
+                                  onChange={() => setRedirect(!redirect)}
+                                  className="w-4 h-4 cursor-pointer accent-blue-500"
+                                />
+                              </label>
+
+                              <button
+                                className="cursor-pointer border border-blue-500 text-black gap-2 px-4 py-2 rounded flex items-center justify-center hover:bg-blue-100"
+                                onClick={handleRedirect}
+                              >
+                                <FaCode className="text-black text-lg" />
+                                Execute
+                              </button>
+                         </div>
+
+</div>
+
          </div>
 
                 
