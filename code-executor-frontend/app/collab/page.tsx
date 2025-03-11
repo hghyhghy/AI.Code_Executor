@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { FaCode, FaEye, FaEyeSlash } from "react-icons/fa";
 import { executeCode,getCodeSuggestion } from "@/lib/api";
 import { RxResume } from "react-icons/rx";
-
+import {Menu} from "@headlessui/react"
 
 const socket = io("http://localhost:4000"); // Adjust backend URL as needed
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
@@ -209,9 +209,9 @@ const handleExecuteCode = async () => {
 
 
 return (
-  <div className="flex h-screen  bg-gray-900 text-white">
-    {/* Left side: Editor */}
-    <div className="flex-1 p-4 ">
+  <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
+    {/* Left side: Editor (Takes remaining space) */}
+    <div className="flex-1 p-4 flex flex-col h-full">
       <Editor
         height="100%"
         theme={theme}
@@ -238,11 +238,10 @@ return (
       </div>
     </div>
 
-
-    {/* Right side: Sidebar */}
-    <div className="w-[29rem] h-screen bg-gray-800 p-4 flex flex-col space-y-6 shadow-lg shrink-0">
+    {/* Right side: Sidebar (Reduced width) */}
+    <div className="w-[20rem] h-full bg-[#0D0E0E] p-4 flex flex-col space-y-6 shadow-lg shrink-0">
       {/* Room ID Box */}
-      <div className="p-4 bg-gray-700 rounded-lg text-center">
+      <div className="p-4 bg-[#1E1E1D] rounded-lg text-center gap-5 flex flex-col">
         <p className="text-gray-300">Room ID</p>
         <div className="relative mt-2 flex items-center justify-center">
           <button
@@ -258,56 +257,76 @@ return (
             {showRoomId ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
-      </div>
 
       {/* Language Selector */}
-      <div className="p-10 bg-gray-800 rounded-lg">
-        <h1 className="text-2xl mb-3 flex items-center justify-center">
-          <FaCode />
+      <div className="p-4 bg-[#1E1E1D] rounded">
+        <h1 className="text-lg font-semibold mb-2 flex items-center gap-2 text-white">
+          Select Language
         </h1>
-        <div className="flex flex-col space-y-2">
-          {languages.map((lang) => (
-            <button
-              key={lang.value}
-              onClick={() => handleLanguageChange(lang.value)}
-              className={`py-2 rounded font-medium transition duration-200 cursor-pointer ${
-                language === lang.value ? "bg-blue-600 text-white shadow-md" : "bg-gray-600 text-gray-300 hover:bg-gray-500"
-              }`}
-            >
-              {lang.name}
-            </button>
-          ))}
-        </div>
+        <Menu as="div" className="relative">
+          <Menu.Button className=" cursor-pointer w-full px-4 py-2 bg-gray-800 text-white flex justify-between items-center rounded-md hover:bg-gray-700 transition">
+            {languages.find((l) => l.value === language)?.name}
+            <span className="text-gray-400">▼</span>
+          </Menu.Button>
+          <Menu.Items className="absolute mt-2 w-full bg-gray-800 rounded-md shadow-lg z-10 cursor-pointer">
+            {languages.map((lang) => (
+              <Menu.Item key={lang.value}>
+                {({ active }) => (
+                  <button
+                    onClick={() => handleLanguageChange(lang.value)}
+                    className={`w-full px-4 py-2 text-left text-gray-200 hover:bg-blue-600 transition cursor-pointer flex flex-row gap-1 ${
+                      language === lang.value ? "bg-blue-500" : ""
+                    }`}
+                  >
+                   <FaCode className="text-blue-400" />  {lang.name}
+                  </button>
+                )}
+              </Menu.Item>
+            ))}
+          </Menu.Items>
+        </Menu>
       </div>
 
       {/* Theme Selector */}
-      <h3 className="text-lg mb-3 flex items-center justify-center">Choose Theme</h3>
-      <div className="flex flex-row gap-5">
-        {themes.map((t) => (
-          <button
-            key={t.value}
-            onClick={() => setTheme(t.value)}
-            className={`flex items-center gap-3 px-5 py-2 rounded font-medium transition duration-200 cursor-pointer ${
-              theme === t.value ? "bg-blue-600 text-white shadow-md" : "bg-gray-600 text-gray-300 hover:bg-gray-500"
-            }`}
-          >
-            <div
-              className={`w-5 h-5 flex items-center justify-center border-2 rounded-full ${
-                theme === t.value ? "border-white bg-white" : "border-gray-400"
-              }`}
-            >
-              {theme === t.value && <div className="w-3 h-3 bg-blue-600 rounded-full"></div>}
-            </div>
-            <span>{t.name}</span>
-          </button>
-        ))}
+      <div className="p-4 bg-[#1E1E1D] rounded">
+        <h1 className="text-lg font-semibold mb-2 text-white  flex items-start justify-start">Choose Theme</h1>
+        <Menu as="div" className="relative">
+          <Menu.Button className="cursor-pointer w-full px-4 py-2 bg-gray-800 text-white flex justify-between items-center rounded-md hover:bg-gray-700 transition">
+            {themes.find((t) => t.value === theme)?.name}
+            <span className="text-gray-400">▼</span>
+          </Menu.Button>
+          <Menu.Items className="absolute mt-2 w-full bg-gray-800 rounded-md shadow-lg z-10">
+            {themes.map((t) => (
+              <Menu.Item key={t.value}>
+                {({ active }) => (
+                  <button
+                    onClick={() => setTheme(t.value)}
+                    className={`w-full px-4 py-2 flex items-center gap-2 text-gray-200 hover:bg-blue-600 transition ${
+                      theme === t.value ? "bg-blue-500" : ""
+                    }`}
+                  >
+                    <div
+                      className={`w-4 h-4 rounded-full border-2 ${
+                        theme === t.value ? "border-white bg-blue-500" : "border-gray-400"
+                      }`}
+                    ></div>
+                    {t.name}
+                  </button>
+                )}
+              </Menu.Item>
+            ))}
+          </Menu.Items>
+        </Menu>
       </div>
+
+      </div>
+
 
       {/* Run Button */}
       <div className="flex space-x-3">
         <button
           onClick={handleExecuteCode}
-          className="bg-blue-600 px-4 py-2 rounded-md flex items-center space-x-2 hover:bg-blue-700 transition"
+          className="bg-blue-600 px-4 py-2 rounded-md flex items-center space-x-2 hover:bg-blue-700 transition  cursor-pointer"
         >
           <RxResume /> <span>Run</span>
         </button>
@@ -316,73 +335,45 @@ return (
 
     {/* Modal for Room Joining */}
     {showModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-30 border border-blue-950">
-    <div className="bg-white p-6 rounded-2xl shadow-2xl w-[400px]">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Code Collab Powered By Ai.Editor</h2>
+      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-30 border border-blue-950">
+        <div className="bg-white p-6 rounded-2xl shadow-2xl w-[400px]">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            Code Collab Powered By Ai.Editor
+          </h2>
 
-      {/* Roles Section */}
-      <div className="text-left">
-        <label className="text-sm text-gray-600">Roles</label>
-        <p className="text-xs text-gray-500 mb-2">
-          Access limited to everyone of select role(s)
-        </p>
+          {/* Room Input */}
+          <div className="text-left">
+            <label className="text-sm text-gray-600">Enter Room ID</label>
+            <input
+              type="text"
+              placeholder={error ? "Error: " + error : "Enter your roomId"}
+              value={inputRoomId}
+              onChange={(e) => setInputRoomId(e.target.value)}
+              className="w-full p-3 rounded-lg bg-gray-200 text-black border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-        {/* Invite Dropdown */}
-        <div className="flex items-center border rounded-lg px-3 py-2 mb-4">
-        <input
-                type="text"
-                placeholder={error ? "Error: " + error : "Enter your roomId"}
-                value={inputRoomId}
-                onChange={(e) => setInputRoomId(e.target.value)}
-                className="w-full p-3 rounded-lg bg-gray-200 text-black border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-
+          {/* Buttons */}
+          <div className="flex justify-center gap-5 mt-4">
+            <button
+              onClick={handleJoinRoom}
+              className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded text-sm cursor-pointer"
+            >
+              Join Room
+            </button>
+            <button
+              onClick={handleConfirmRoom}
+              className="bg-blue-800 hover:bg-blue-800 text-white py-3 px-4 rounded text-sm cursor-pointer"
+            >
+              Create New Room
+            </button>
+          </div>
         </div>
-
-        {/* Role Checkboxes */}
-        {[
-          { role: "Makers", desc: "Everyone assigned the maker role", avatars: true },
-          { role: "Contributors", desc: "Everyone assigned the contributor role", avatars: false },
-          { role: "Viewers", desc: "Everyone assigned the viewer role", avatars: false },
-        ].map(({ role, desc, avatars }) => (
-          <label key={role} className="flex items-center gap-3 mb-3">
-            <input type="radio" className="accent-blue-500 w-5 h-5" defaultChecked />
-            <div>
-              <p className="text-gray-700 font-medium">{role}</p>
-              <p className="text-gray-500 text-sm">{desc}</p>
-            </div>
-            {/* {avatars && (
-              <div className="flex -space-x-2">
-                <img className="w-6 h-6 rounded-full border" src="/avatar1.png" alt="User" />
-                <img className="w-6 h-6 rounded-full border" src="/avatar2.png" alt="User" />
-                <img className="w-6 h-6 rounded-full border" src="/avatar3.png" alt="User" />
-              </div>
-            )} */}
-          </label>
-        ))}
       </div>
-
-      {/* Buttons */}
-      <div className="flex justify-center gap-5 mt-4">
-  <button
-    onClick={handleJoinRoom}
-    className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded text-sm cursor-pointer"
-  >
-    Join Room
-  </button>
-  <button
-    onClick={handleConfirmRoom}
-    className="bg-blue-800 hover:bg-blue-800 text-white py-3 px-4 rounded text-sm cursor-pointer"
-  >
-    Create New Room
-  </button>
-</div>
-    </div>
-  </div>
-)}
-
+    )}
   </div>
 );
+
 
 
 }

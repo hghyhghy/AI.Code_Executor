@@ -117,9 +117,19 @@ export default function HistoryPage() {
   }
   // Get the user's name from the first history entry (since it's the same for all)
   const username = history.length > 0 ? history[0].user.name : "";
+  const  progress  =  history.length > 0 ?  ((currentIndex + 1)/history.length) * 100 :  0;
+  console.log(history.length)
 
   return (
+    
     <div className="min-h-screen bg-gray-200 text-black flex flex-col items-center p-3 w-full">
+
+<div className="w-[20%] h-3 bg-gray-300 rounded overflow-hidden mt-4  relative -left-64 top-[5.5rem]">
+              <div
+                className="h-full bg-blue-500 transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
 
       {loading && <p className="text-gray-400">Loading history...</p>}
       {error && <p className="text-red-500">{error}</p>}
@@ -127,6 +137,8 @@ export default function HistoryPage() {
       {!loading && !error && history.length === 0 && (
         <p className="text-gray-400">No execution history found.</p>
       )}
+
+
 
       {history.length > 0 && (
         <>  
@@ -156,10 +168,12 @@ export default function HistoryPage() {
                       />
                   </button>
 
-                {username && <h1 className="text-1xl text-sm font-semibold  mt-3  uppercase ">Execution History of <span className="text-blue-400">{username}</span></h1>}
+
+                {username && <h2 className=" text-sm font-semibold  mt-3  uppercase "><span className="text-blue-400">{username}</span></h2>}
+
 
                 </div>
-                <div className="relative ml-80 flex flex-wrap items-center justify-between gap-5   px-6 py-3 bg-white shadow-md rounded-md">
+                <div className="relative ml-[40rem] flex flex-wrap items-center justify-between gap-5   px-6 py-3 bg-white shadow-md rounded-md">
   
   {/* Delete Specific Entry */}
                             <button
@@ -172,16 +186,17 @@ export default function HistoryPage() {
 
                             {/* Delete All Entries */}
                             <button
+                            onClick={() => setShowModal(true)}
         className="px-4 py-2 flex items-center gap-2 bg-[#2F2078] text-white rounded disabled:bg-red-400 cursor-pointer">
          Delete All
       </button>
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-200  bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center w-96">
+        <div className="fixed inset-0 flex items-center justify-center bg-black  bg-opacity-50 z-50">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center w-96">
             <h2 className="text-lg font-semibold text-red-600">Are you sure?</h2>
-            <p className="text-sm text-gray-600 my-2">
+            <p className="text-sm text-gray-300 my-2">
               Type <strong>"delete all"</strong> below to confirm deletion.
             </p>
 
@@ -190,7 +205,7 @@ export default function HistoryPage() {
               type="text"
               value={deleteInput}
               onChange={(e) => setDeleteInput(e.target.value)}
-              className="border p-2 w-full mt-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="border p-2 w-full mt-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-300"
               placeholder='Type "delete all" here'
             />
 
@@ -210,7 +225,7 @@ export default function HistoryPage() {
               <button
                 className={`px-4 py-2 rounded text-white  ${
                   deleteInput.toLowerCase() === "delete all"
-                    ? "bg-gray-800 cursor-pointer"
+                    ? "bg-gray-700 cursor-pointer"
                     : "bg-red-300 cursor-not-allowed"
                 }`}
                 disabled={deleteInput.toLowerCase() !== "delete all"}
