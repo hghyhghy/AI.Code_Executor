@@ -30,7 +30,7 @@ export default function AuthForm({ type }: { type: "login" | "register" }) {
 
       localStorage.setItem("token", res.data.access_token);
       toast.success(type === "login" ? "Login successful!" : "Registration successful!");
-      router.push("/execute");
+      router.push("/landing");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Something went wrong.");
     } finally {
