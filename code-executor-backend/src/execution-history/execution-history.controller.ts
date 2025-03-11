@@ -1,5 +1,5 @@
 
-import { Controller,Get,Req,UseGuards } from '@nestjs/common';
+import { Controller,Get,Req,UseGuards,Param,Delete } from '@nestjs/common';
 import { ExecutionHistoryService } from './execution-history.service';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -13,5 +13,22 @@ export class ExecutionHistoryController {
    async getUserExecutionHistory(@Req() req:Request){
     const userId =  (req.user as any)?.id
     return this.executionHistoryController.getExecutionHistory(Number(userId))
+   }
+
+   @UseGuards(JwtAuthGuard)
+   @Delete("delete-all")
+   async deleteall(@Req() req:Request){
+    const userId =  (req.user as any) ?.id
+    return this.executionHistoryController.deleteExecutionHistory(Number(userId))
+   }
+
+   @UseGuards(JwtAuthGuard)
+   @Delete('delete/:entryId')
+   async deletespecific(@Req() req:Request ,  @Param('entryId') entryId:string){
+    const userId =  (req.user as any) ?.id
+    return this.executionHistoryController.deleteSpecificHistiory(
+        Number(entryId),
+        Number(userId)
+    )
    }
 }
