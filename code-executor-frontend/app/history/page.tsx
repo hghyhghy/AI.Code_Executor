@@ -24,6 +24,8 @@ export default function HistoryPage() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [redirect, setRedirect] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [deleteInput, setDeleteInput] = useState("")
 
   const router = useRouter()
   useEffect(() => {
@@ -70,25 +72,33 @@ export default function HistoryPage() {
       setDeleting(false);
     }
   }
-  const deleteallhistory=async() => {
-    try {
+
+  const confirmDeleteAll = async() => {
+    if(deleteInput.toLowerCase() === "delete all"){
       setDeleting(true)
-
-      const token  = localStorage.getItem("token")
-      await axios.delete("http://localhost:3001/execution-history/delete-all",{
-        headers:{
-
-          Authorization:`Bearer ${token}`
-        }
-      });
-      setHistory([])
-      setCurrentIndex(0)
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message);
-    } finally {
-      setDeleting(false);
     }
+      try {
+        setDeleting(true)
+  
+        const token  = localStorage.getItem("token")
+        await axios.delete("http://localhost:3001/execution-history/delete-all",{
+          headers:{
+  
+            Authorization:`Bearer ${token}`
+          }
+        });
+        setHistory([])
+        setShowModal(false)
+        setDeleteInput("")
+        setCurrentIndex(0)
+        alert("All execution history deleted successfully!");
+      } catch (err: any) {
+        setError(err.response?.data?.message || err.message);
+      } finally {
+        setDeleting(false);
+      }
   }
+
   const  nextEntry =()=>{
     if(currentIndex <  history.length -1){
         setCurrentIndex((prev) =>  prev+1)
@@ -153,21 +163,65 @@ export default function HistoryPage() {
   
   {/* Delete Specific Entry */}
                             <button
-                              className="px-4 py-2 flex items-center gap-2 bg-[#2F2078] text-white rounded  disabled:bg-red-300"
+                              className="px-4 py-2 flex items-center gap-2 bg-[#2F2078] text-white rounded  disabled:bg-red-300 cursor-pointer"
                               onClick={() => deleteSpecificHistory(history[currentIndex]?.id)}
                               disabled={deleting}
                             >
-                              <FaTrashAlt /> {deleting ? "Deleting..." : "Delete This"}
+                              {deleting ? "Deleting..." : "Delete"}
                             </button>
 
                             {/* Delete All Entries */}
                             <button
-                              className="px-4 py-2 flex items-center gap-2 bg-[#2F2078] text-white rounded disabled:bg-red-400"
-                              onClick={deleteallhistory}
-                              disabled={deleting}
-                            >
-                              <FaTrashAlt /> {deleting ? "Deleting..." : "Delete All"}
-                            </button>
+        className="px-4 py-2 flex items-center gap-2 bg-[#2F2078] text-white rounded disabled:bg-red-400 cursor-pointer">
+         Delete All
+      </button>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-200  bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center w-96">
+            <h2 className="text-lg font-semibold text-red-600">Are you sure?</h2>
+            <p className="text-sm text-gray-600 my-2">
+              Type <strong>"delete all"</strong> below to confirm deletion.
+            </p>
+
+            {/* Input Field */}
+            <input
+              type="text"
+              value={deleteInput}
+              onChange={(e) => setDeleteInput(e.target.value)}
+              className="border p-2 w-full mt-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              placeholder='Type "delete all" here'
+            />
+
+            <div className="flex justify-between mt-4">
+              {/* Cancel Button */}
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 cursor-pointer"
+                onClick={() => {
+                  setShowModal(false);
+                  setDeleteInput("");
+                }}
+              >
+                Cancel
+              </button>
+
+              {/* Confirm Delete Button */}
+              <button
+                className={`px-4 py-2 rounded text-white  ${
+                  deleteInput.toLowerCase() === "delete all"
+                    ? "bg-gray-800 cursor-pointer"
+                    : "bg-red-300 cursor-not-allowed"
+                }`}
+                disabled={deleteInput.toLowerCase() !== "delete all"}
+                onClick={confirmDeleteAll}
+              >
+                {deleting ? "Deleting..." : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
                             {/* Execution Redirect */}
                             <div className="flex items-center gap-3">
