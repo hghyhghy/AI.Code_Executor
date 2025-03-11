@@ -286,7 +286,7 @@ export default function ExecuteCode() {
   
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex">
+    <div className="min-h-screen bg-[#0D0E0E] text-white flex">
       {/* Main Content (Code Editor) */}
       <div className="flex-1 flex flex-col  items-center p-6">
         {/* Hamburger Menu Button */}
@@ -297,7 +297,7 @@ export default function ExecuteCode() {
           >
             <FaBars size={24} />
           </button>
-          <h1 className="font-bold text-3xl mb-2">Online Code Editor</h1>
+          <h1 className="font-bold text-3xl mb-5">Online Code Editor</h1>
 
         </div>
         <div className=" w-[65%] absolute left-0">
@@ -321,10 +321,10 @@ export default function ExecuteCode() {
 
   
       {/* Folder Section */}
-      <div className="fixed md:relative top-0 right-0 w-80 bg-gray-800 p-4 rounded-md shadow-lg h-screen overflow-y-auto transition-transform transform">
-      <h2 className="text-xl font-semibold mb-3 flex items-center justify-between">
+      <div className="fixed md:relative top-0 right-0 w-80 bg-[#020202] p-4 rounded-md shadow-lg h-screen overflow-y-auto transition-transform transform">
+      <h2 className="text-xl font-semibold mb-3 flex items-center justify-between text-gray-300">
         Create Folders
-        <FaPlus onClick={() => setCreating(!creating)} className="text-white cursor-pointer hover:text-blue-400 transition" size={20} />
+        <FaPlus onClick={() => setCreating(!creating)} className="text-white cursor-pointer bg-[#1E1E1E] hover:text-blue-400 transition" size={20} />
       </h2>
 
       {creating && (
@@ -336,7 +336,7 @@ export default function ExecuteCode() {
             onChange={(e) => setFolderName(e.target.value)}
             className="p-2 border border-gray-600 rounded w-full bg-gray-700 text-white"
           />
-          <button onClick={createFolder} disabled={!folderName.trim()} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          <button onClick={createFolder} disabled={!folderName.trim()} className="px-4 py-2 bg-[#3D3C3C] text-white rounded cursor-pointer ">
             <IoAdd />
           </button>
         </div>
@@ -364,16 +364,17 @@ export default function ExecuteCode() {
           setSelectedFolder(folder.id); // Store selected folder ID
           setShowModal(true); // Open modal
         }}
-        className="ml-auto px-3 py-1 text-2xl bg-transparent border border-blue-100 cursor-pointer text-white rounded hover:bg-blue-600"
+        className="ml-auto px-4 py-3 text-1xl bg-[#3E3E3E]  cursor-pointer text-white rounded  mb-2"
       >
-        <IoIosAddCircleOutline/>
+                    <IoAdd />
+
       </button>
       <button
     onClick={(e) => {
       e.stopPropagation(); // Prevent folder toggle
       deleteFolder(folder.id);
     }}
-    className="px-3 py-[2%] text-white text-2xl rounded border border-blue-100 hover:bg-red-600 flex items-center"
+    className="px-4 py-3 text-white text-1xl rounded bg-[#2B2B2B] flex items-center mb-2 cursor-pointer"
   >
     <RiDeleteBin6Fill className="text-xl" />
   </button>
@@ -381,12 +382,12 @@ export default function ExecuteCode() {
 
     {/* Files List */}
     {expandedFolders[folder.id] && (
-  <ul className="pl-10 py-2 bg-gray-800 rounded">
+  <ul className="pl-10 py-2 bg-[#0F1010] rounded">
     {files?.length === 0 && <p className="text-gray-400">No files found.</p>}
     {files?.map((file) => (
       <li
         key={file.name}
-        className="p-2 flex items-center cursor-pointer hover:bg-gray-600 relative"
+        className="p-2 flex items-center cursor-pointer  relative"
         onClick={() => openFile(folder.id, file.name)}
         onContextMenu={(e) => handleRightClick(e, file.name)} // Right-click event
       >
