@@ -15,7 +15,10 @@ interface Comment {
     id:number,
     content:string,
     createdAt:string,
-    userId:string
+    userId:string,
+    user:{
+      name:string
+    }
 }
 
 interface DecodedToken {
@@ -145,11 +148,14 @@ export default  function  ExecutedCodes(){
             <div className="space-y-3">
               {comments.map((comment) => (
                 <div key={comment.id} className="bg-gray-100 p-3 rounded-md">
+                      <p className="text-gray-800">
+                            <span className="font-semibold text-blue-600">{comment.user?.name || "unknown"}</span>
+                          </p>
                   <p className="text-gray-800">{comment.content}</p>
                   <p className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString()}</p>
                                   <button
                                     onClick={() => handleDeleteComment(comment.id)}
-                                    className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition"
+                                    className="px-2 py-1 bg-[#2F2078] cursor-pointer  text-white text-xs rounded  transition"
                                   >
                                     Delete
                                   </button>
