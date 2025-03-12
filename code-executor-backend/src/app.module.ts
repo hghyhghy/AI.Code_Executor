@@ -12,9 +12,10 @@ import { CollaborationService } from './collaboration/collaboration.service';
 import { CollaborationModule } from './collaboration/collaboration.module';
 import { PrismaService } from './prisma.service';
 import { ExecutionHistoryModule } from './execution-history/execution-history.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
-  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule],
+  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule, CommentModule],
   controllers: [AppController],
   providers: [AppService, GeminiService, CollaborationGateway, CollaborationService,PrismaService],
 })

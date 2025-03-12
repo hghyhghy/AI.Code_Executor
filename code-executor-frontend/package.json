@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NODE_OPTIONS='--max-old-space-size=512' next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -12,6 +12,7 @@
     "@headlessui/react": "^2.2.0",
     "@monaco-editor/react": "^4.7.0",
     "axios": "^1.8.1",
+    "jwt-decode": "^4.0.0",
     "monaco-editor": "^0.52.2",
     "monaco-editor-core": "^0.52.2",
     "monaco-languageclient": "^9.4.0",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/jwt-decode": "^2.2.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -15,6 +15,7 @@ model User {
   executionHistories ExecutionHistory[]
   folders   Folder[]
   sharedcode SharedCode[]
+  comments Comment[]
 }
 
 model ExecutionHistory {
@@ -24,6 +25,7 @@ model ExecutionHistory {
   language  String   
   output    String   @db.Text()
   createdAt DateTime @default(now())
+  comments Comment[]
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -79,4 +81,16 @@ model UserRoom {
   room      Room    @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
 
   @@unique([socketId, roomId]) // Ensures a socket can join a room only once
+}
+
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  userId    Int// References SharedCode.id
+  content   String   @db.Text()
+  createdAt DateTime @default(now())
+  executionId   Int  
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+   execution       ExecutionHistory  @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  @@index([content(length: 255)]) // Fix: Added length limit (255) for uniqueness
 }
