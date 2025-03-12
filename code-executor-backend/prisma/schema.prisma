@@ -25,6 +25,7 @@ model ExecutionHistory {
   language  String   
   output    String   @db.Text()
   createdAt DateTime @default(now())
+  comments Comment[]
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -60,7 +61,6 @@ model SharedCode {
   createdAt DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comments  Comment[]
 }
 
 model Room {
@@ -86,12 +86,11 @@ model UserRoom {
 
 model Comment {
   id        Int      @id @default(autoincrement())
-  userId    Int
-  codeId    String  // References SharedCode.id
+  userId    Int// References SharedCode.id
   content   String   @db.Text()
   createdAt DateTime @default(now())
-
+  executionId   Int  
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sharedCode SharedCode @relation(fields: [codeId], references: [id], onDelete: Cascade)
+   execution       ExecutionHistory  @relation(fields: [executionId], references: [id], onDelete: Cascade)
   @@index([content(length: 255)]) // Fix: Added length limit (255) for uniqueness
 }
