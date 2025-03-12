@@ -48,8 +48,10 @@ export default function HeroPage() {
             className="bg-blue-600 text-white px-6 py-3 rounded-md text-lg cursor-pointer">
               Get Code.AI 
             </button>
-            <button className="border border-gray-400 text-black px-6 py-3 rounded-md text-lg">
-              show Pricing
+            <button
+            onClick={() => router.push("/community")}
+            className="border border-gray-400 text-black px-6 py-3 rounded-md text-lg cursor-pointer">
+              Our Community
             </button>
           </div>
         </section>
