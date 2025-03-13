@@ -5,17 +5,20 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaRegCopy } from "react-icons/fa";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export  default  function ShareCode(){
     const [code, setCode] = useState("")
     const [language, setLanguage] = useState("javascript")
     const [output, setOutput] = useState("")
     const [shareLink, setShareLink] = useState("")
+    const router =  useRouter()
 
     const handleShare =  async() => {
         try {
             
-            const token  = localStorage.getItem("token")
+            const token  = Cookies.get("token")
             if (!token) {
                 toast.error("You must be logged in to share code.");
                 return;
@@ -74,12 +77,22 @@ export  default  function ShareCode(){
         rows={3}
       />
 
+      <div className=" flex flex-row gap-2">
+
+
       <button
       onClick={handleShare}
        className="mt-4 bg-blue-500 text-white px-5 py-2 rounded-md shadow-md hover:bg-blue-600 transition cursor-pointer"
       >
         share Code 
       </button>
+      <button
+      onClick={() => router.push("/execute")}
+       className="mt-4 bg-blue-500 text-white px-5 py-2 rounded-md shadow-md hover:bg-blue-600 transition cursor-pointer"
+      >
+        Go Back
+      </button>
+      </div>
 
       {shareLink && (
 
