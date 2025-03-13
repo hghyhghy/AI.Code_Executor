@@ -5,18 +5,20 @@ import { useSearchParams, useRouter } from "next/navigation";
 import io from "socket.io-client";
 import dynamic from "next/dynamic";
 import { FaCode, FaEye, FaEyeSlash } from "react-icons/fa";
-import { executeCode,getCodeSuggestion } from "@/lib/api";
+import { executeCode} from "@/lib/api";
 import { RxResume } from "react-icons/rx";
 import {Menu} from "@headlessui/react"
-
-const socket = io("http://localhost:4000"); // Adjust backend URL as needed
+import Cookies from "js-cookie";
+const socket = io("http://localhost:4000", {
+  transports: ["websocket"],
+}); // Adjust backend URL as needed
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
 const generateRoomId = () => Math.random().toString(36).substring(2, 6);
 export default function CollabPageContent() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <CollabPageContent />
+      <CollabPage/>
     </Suspense>
   );
 }
@@ -46,7 +48,7 @@ function CollabPage() {
   const [roomId, setRoomId] = useState<string>("");
   const [inputRoomId, setInputRoomId] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(true);
-  const [language, setLanguage] = useState<string>("javascript");
+  const [language, setLanguage] = useState<string>("python");
   const [copyTooltip, setCopyTooltip] = useState<string>("Copy");
   const [showRoomId, setShowRoomId] = useState<boolean>(false);
   const [users, setUsers] = useState<{ socketId: string; access: "read" | "write" }[]>([]);
@@ -59,14 +61,15 @@ function CollabPage() {
   const [suggestion, setSuggestion] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState("")
+  const [mounted, setMounted] = useState(false)
 
   const editorRef = useRef<any>(null);
   const lastContentRef = useRef<string>("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-      setUsername(storedUser?.username || "Guest");
+      const storedUser =  Cookies.get("token")
+      // setUsername(storedUser?.username || "Guest");
     }
   }, []);
 
@@ -214,11 +217,16 @@ const handleExecuteCode = async () => {
   setLoading(false)
 }
 
+useEffect(() => {
+  setMounted(true);
+}, []);
+
 
 return (
   <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
     {/* Left side: Editor (Takes remaining space) */}
     <div className="flex-1 p-4 flex flex-col h-full">
+      {mounted && (
       <Editor
         height="100%"
         theme={theme}
@@ -236,6 +244,7 @@ return (
           
         }}
       />
+      )}
       {/* Output Box - Now inside the layout properly */}
       <div className="bg-gray-700 p-3 rounded-md h-40  overflow-y-auto mt-4 w-full">
         <h3 className="text-lg mb-2">Output:</h3>
