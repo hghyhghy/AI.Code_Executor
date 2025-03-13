@@ -16,6 +16,7 @@ import { PrismaService } from 'src/prisma.service';
     allowedHeaders: ["Content-Type"],
     credentials: true,
   }})
+  // the 4000 is the socket port 
 export class CollaborationGateway {
   @WebSocketServer()
   server: Server;
