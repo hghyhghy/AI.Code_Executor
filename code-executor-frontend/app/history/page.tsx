@@ -5,6 +5,7 @@ import { GrPrevious } from "react-icons/gr";
 import { GrNext } from "react-icons/gr";
 import { useRouter } from "next/navigation";
 import { FaCode, FaTrashAlt } from "react-icons/fa";
+import Cookies from "js-cookie";
 
 interface ExecutionHistory {
   id: number;
@@ -31,7 +32,7 @@ export default function HistoryPage() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = Cookies.get("token");
         if (!token) throw new Error("Token not found");
 
         const { data } = await axios.get("http://localhost:3001/execution-history/history", {
