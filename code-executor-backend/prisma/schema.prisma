@@ -90,6 +90,8 @@ model Comment {
   content   String   @db.Text()
   createdAt DateTime @default(now())
   executionId   Int  
+  likes Int @default(0)
+  dislikes Int @default(0)
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
    execution       ExecutionHistory  @relation(fields: [executionId], references: [id], onDelete: Cascade)
   @@index([content(length: 255)]) // Fix: Added length limit (255) for uniqueness

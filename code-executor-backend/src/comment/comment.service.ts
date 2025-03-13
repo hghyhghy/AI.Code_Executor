@@ -50,4 +50,31 @@ export class CommentService {
             }
         })
     }
+
+    async  likeComment(commentId:number){
+            return this.prisma.comment.update({
+                where:{
+                    id:commentId
+                },
+                data:{
+                    likes:{
+                        increment:1
+                    }
+                }
+            })
+    }
+
+    async  dislikeComment(commentId:number){
+        return this.prisma.comment.update({
+            where:{
+                id:commentId
+            },
+            data:{
+                dislikes:{
+                    increment:1
+                }
+            }
+        })
+
+    }
 }

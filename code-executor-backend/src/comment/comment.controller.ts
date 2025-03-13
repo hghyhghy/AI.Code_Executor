@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Delete, Param, Body, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Req, UseGuards,Patch } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
@@ -38,5 +38,18 @@ export class CommentController {
             userId
         )
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('/like/:commentId')
+    async  likeComment(@Param('commentId') commentId:string){
+        return this.commentservice.likeComment(Number(commentId))
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('/dislike/:commentId')
+    async  dislikeComment(@Param('commentId') commentId:string){
+        return this.commentservice.dislikeComment(Number(commentId))
+    }
+
 
 }
