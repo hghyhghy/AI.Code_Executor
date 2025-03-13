@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { CiUser } from "react-icons/ci";
 import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
+import Cookies from "js-cookie";
 
 export default function AuthForm({ type }: { type: "login" | "register" }) {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function AuthForm({ type }: { type: "login" | "register" }) {
       const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/${endpoint}`, payload);
 
       localStorage.setItem("token", res.data.access_token);
+      Cookies.set("token", res.data.access_token, { expires: 7 });
       toast.success(type === "login" ? "Login successful!" : "Registration successful!");
       router.push("/landing");
     } catch (error: any) {
