@@ -7,8 +7,9 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import { IoAdd } from "react-icons/io5";
 import { CiFileOn } from "react-icons/ci";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { IoIosAddCircleOutline } from "react-icons/io";
 import { HiArrowTurnDownRight } from "react-icons/hi2";
+import Cookies from "js-cookie";
+import { useRef } from "react";
 
 export default function ExecuteCode() {
   const [folders, setFolders] = useState<{ id: number; name: string }[]>([]);
@@ -32,9 +33,25 @@ export default function ExecuteCode() {
   const [fileContent, setFileContent] = useState<{ [key: number]: string }>({});
   const [showModal, setShowModal] = useState(false)
   const [expandedFolders, setExpandedFolders] = useState([{}])
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const [token, setToken] = useState<string | null>(Cookies.get("token") || null);
+  const prevTokenRef = useRef<string | null>(null);
   const API_URL = "http://localhost:3001";
   const API_URL1 = "http://localhost:3001";
+
+  useEffect(() => {
+    const storedToken = Cookies.get("token"); // Fetch latest token
+    if (storedToken && storedToken !== token) {
+      console.log("🔄 New user detected, updating token:", storedToken);
+      setToken(storedToken);
+      setFolders([]); // Reset folders only when a new user logs in
+      setFiles([]);
+      setSelectedFolder(null);
+      Cookies.remove("last_opened_file"); // Clear stored file
+      fetchFolders();
+    }
+  }, [token]);
+
+
   useEffect(() => {
     if (selectedFile) {
       console.log(`Updated selectedFile: folderId=${selectedFile.folderId}, fileName=${selectedFile.folderName}, fileId=${selectedFile.id}, name=${selectedFile.name}, content=${selectedFile.content}`);
@@ -50,7 +67,7 @@ export default function ExecuteCode() {
   }
 
   useEffect(() => {
-    const lastOpenedFile  =  localStorage.getItem("last_opened_file")
+    const lastOpenedFile  =  Cookies.get("last_opened_file")
     if(lastOpenedFile ){
       const {folderId,fileName} = JSON.parse(lastOpenedFile )
       openFile(folderId,fileName)
@@ -59,12 +76,13 @@ export default function ExecuteCode() {
   useEffect(() => {
     if (token) {
       fetchFolders().then((fetchedFolders) => {
-        if (fetchedFolders && fetchedFolders.length > 0) {
-          setSelectedFolder(fetchedFolders[0].id); // Automatically select the first folder
+        if (fetchedFolders.length > 0) {
+          setFolders(fetchedFolders);
+          setSelectedFolder(fetchedFolders[0].id); // Select first folder
         }
       });
     }
-  }, [token]);
+  }, []);
   
   useEffect(() => {
     if (selectedFolder !== null) {
@@ -72,23 +90,30 @@ export default function ExecuteCode() {
     }
   }, [selectedFolder]);
 
-  async function fetchFolders() {
-    try {
-      const res = await fetch(`${API_URL}/folder/find`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setFolders(data.folders);
-        return data.folders;
-      }
-      else alert(data.message || "Failed to fetch folders");
+async function fetchFolders(): Promise<{ id: number; name: string }[]> {
+  if (!token) return [];
 
-    } catch (error) {
-      console.error("Error fetching folders:", error);
+  try {
+    const res = await fetch(`${API_URL}/folder/find`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    
+    if (res.ok && data.folders.length > 0) {
+      setFolders(data.folders);
+      setSelectedFolder((prev) => prev ?? data.folders[0].id); // Only set if it's null
+    } else {
+      alert(data.message || "No folders found");
+      setFolders([]); // Only clear folders if no data
     }
+    return data.folders;
+  } catch (error) {
+    console.error("Error fetching folders:", error);
+    return [];
   }
+}
+
 
   // for fetching files
   async function fetchFiles(folderId:number) {
