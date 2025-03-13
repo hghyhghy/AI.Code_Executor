@@ -19,7 +19,7 @@ a fullstack AI supported code editor , with code options for python,javascript,t
 
 ## API Reference in this project 
 
-#### register / entry / login  point for user  
+#### register / entry   point for user  
 
 ```http
   POST/auth/register 
