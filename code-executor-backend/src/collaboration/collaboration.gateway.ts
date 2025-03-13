@@ -9,7 +9,13 @@ import { Server, Socket } from 'socket.io';
 import { CollaborationService } from './collaboration.service';
 import { PrismaService } from 'src/prisma.service';
 
-@WebSocketGateway(4000,{ cors: { origin: '*' } })
+@WebSocketGateway(4000, {
+  cors: {
+    origin: ["http://localhost:3000"],  // Change this to your frontend URL
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+    credentials: true,
+  }})
 export class CollaborationGateway {
   @WebSocketServer()
   server: Server;
