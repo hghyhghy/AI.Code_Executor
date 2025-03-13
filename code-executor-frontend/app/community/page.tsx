@@ -3,6 +3,10 @@
 import {useEffect,useState} from 'react';
 import axios  from 'axios';
 import { jwtDecode } from "jwt-decode";
+import { AiTwotoneDislike } from "react-icons/ai";
+import { AiTwotoneLike } from "react-icons/ai";
+import Cookies from 'js-cookie';
+
 interface  ExecutionHistory {
     id:number,
     code:string,
@@ -18,7 +22,9 @@ interface Comment {
     userId:string,
     user:{
       name:string
-    }
+    },
+    likes:number,
+    dislikes:number
 }
 
 interface DecodedToken {
@@ -36,7 +42,7 @@ export default  function  ExecutedCodes(){
     const [userId, setUserId] = useState<number | null>(null);
 
     useEffect(() => {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const token = typeof window !== "undefined" ? Cookies.get("token") : null;
       if (token) {
         try {
           const decoded: DecodedToken = jwtDecode(token);
@@ -101,6 +107,28 @@ export default  function  ExecutedCodes(){
         }
     }
 
+    //function for like 
+    const handleLikeComment=async(commentId:number)=>{
+      try {
+        await axiosInstance.patch(`/comment/like/${commentId}`)
+        setComments((prevcomments) => 
+        prevcomments.map((comment) =>  comment.id ===  commentId ? {...comment,  likes:comment.likes+1} :comment))
+      } catch (err) {
+        console.error("Error liking comment:", err);
+      }
+    } 
+
+    // function  for the dislike
+    const handleDislikeComment =  async(commentId:number) => {
+      try {
+        await axiosInstance.patch(`/comment/dislike/${commentId}`);
+        setComments((prevcomments) => 
+        prevcomments.map((comment) =>  comment.id ===  commentId ? {...comment, dislikes:comment.dislikes+1} : comment))
+      } catch (error) {
+        
+      }
+    }
+
 
     if (executions.length === 0) return <p>Loading executed codes...</p>;
     return (
@@ -153,12 +181,30 @@ export default  function  ExecutedCodes(){
                           </p>
                   <p className="text-gray-800">{comment.content}</p>
                   <p className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString()}</p>
+
+                    <div className="flex items-center gap-3 mt-2">
+                                 <button
+                                    onClick={() => handleLikeComment(comment.id)}
+                                    className="flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition"
+                                  >
+                                    <AiTwotoneLike/> {comment.likes}
+                                  </button>
+                                  <button
+                                    onClick={() => handleDislikeComment(comment.id)}
+                                    className="flex items-center gap-1 px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition"
+                                  >
+                                    <AiTwotoneDislike/>  {comment.dislikes}
+                                </button>
+
                                   <button
                                     onClick={() => handleDeleteComment(comment.id)}
                                     className="px-2 py-1 bg-[#2F2078] cursor-pointer  text-white text-xs rounded  transition"
                                   >
                                     Delete
                                   </button>
+
+                    </div>
+                    
                                 
                 </div>
 
