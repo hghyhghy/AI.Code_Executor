@@ -12,7 +12,7 @@ import Cookies from "js-cookie";
 import { IoMdClose } from "react-icons/io";
 const socket = io("http://localhost:4000", {
   transports: ["websocket"],
-}); // Adjust backend URL as needed
+}); 
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
 const generateRoomId = () => Math.random().toString(36).substring(2, 6);
@@ -162,24 +162,44 @@ function CollabPage() {
 
 
 
-  const handleCreateRoom = () => {
-    const newRoomId = generateRoomId();
-    setRoomId(newRoomId);
-    setIsRoomCreator(true)
-    setShowModal(true);
-    router.push(`/collab?roomId=${newRoomId}`);
-    socket.emit("joinRoom", { roomId: newRoomId });
-  };
+  // const handleCreateRoom = () => {
+  //   const newRoomId = generateRoomId();
+  //   setRoomId(newRoomId);
+  //   setIsRoomCreator(true)
+  //   setShowModal(true);
+  //   router.push(`/collab?roomId=${newRoomId}`);
+  //   socket.emit("joinRoom", { roomId: newRoomId });
+  // };
 
-  const handleJoinRoom = () => {
-    if (!inputRoomId.trim()){
+  const handleJoinRoom = async () => {
+    if (inputRoomId.trim().length !== 4 ){
       setError('Please Enter roomId to  proceed')
       return
     }
-    setRoomId(inputRoomId);
-    router.push(`/collab?roomId=${inputRoomId}`);
-    socket.emit("joinRoom", { roomId: inputRoomId });
-    setShowModal(false);
+
+    try {
+      const  res  = await fetch(`http://localhost:3001/rooms/validate?roomId=${inputRoomId}`)
+      
+      if (!res.ok) {
+        setError('Please Enter roomId to  proceed')
+
+      }
+      const {valid} = await res.json()
+      if(valid){
+        setRoomId(inputRoomId);
+        router.push(`/collab?roomId=${inputRoomId}`);
+        socket.emit("joinRoom", { roomId: inputRoomId });
+        setShowModal(false);
+      }
+      else {
+        setError("Invalid Room ID. Please check and try again.");
+      }
+
+    } catch (error) {
+      console.error("Error validating room:", error);
+      setError("Something went wrong. Try again later.");
+    }
+
   };
   
   const handleCopyRoomId = async () => {
@@ -200,13 +220,31 @@ function CollabPage() {
 
 
 
-const handleConfirmRoom = () => {
-  const newRoomId = generateRoomId();
-  setRoomId(newRoomId);
-  setShowModal(false);
-  router.push(`/collab?roomId=${newRoomId}`);
+const handleConfirmRoom = async() => {
+  try {
+    const res = await fetch(`http://localhost:3001/rooms/create`, {
+      method:'POST',
+      headers:{
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      }
+    });
+    
+    if (!res.ok) {
+      throw new Error("Failed to create room");
+    }
+    const {roomId} = await res.json()
+    setRoomId(roomId)
+    setShowModal(false);
+    router.push(`/collab?roomId=${roomId}`);
+    socket.emit("joinRoom", { roomId: roomId });
 
-  socket.emit("joinRoom", { roomId: newRoomId });
+
+
+  }  catch (error) {
+    console.error("Error creating room:", error);
+  }
+
 };
 
 const handleExecuteCode = async () => {
