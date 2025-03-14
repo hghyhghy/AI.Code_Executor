@@ -14,9 +14,10 @@ import { PrismaService } from './prisma.service';
 import { ExecutionHistoryModule } from './execution-history/execution-history.module';
 import { CommentModule } from './comment/comment.module';
 import { PublichistoryModule } from './publichistory/publichistory.module';
+import { UserProfileModule } from './user-profile/user-profile.module';
 
 @Module({
-  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule, CommentModule, PublichistoryModule],
+  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule, CommentModule, PublichistoryModule, UserProfileModule],
   controllers: [AppController],
   providers: [AppService, GeminiService, CollaborationGateway, CollaborationService,PrismaService],
 })
