@@ -66,7 +66,7 @@ model SharedCode {
 model Room {
   id         Int       @id @default(autoincrement())
   roomId     String    @unique
-  createdBy  String    // Using Socket ID instead of user ID
+  createdBy  String ?    // Using Socket ID instead of user ID
   createdAt  DateTime  @default(now())
 
   users      UserRoom[]
