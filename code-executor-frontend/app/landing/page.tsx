@@ -1,12 +1,14 @@
 "use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export default function HeroPage() {
 
     const router =  useRouter()
     const handleLogOut=() => {
       localStorage.removeItem("token")
+      Cookies.remove("token")
       sessionStorage.removeItem("token")
       router.push("/login")
     }
