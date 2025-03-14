@@ -1,5 +1,5 @@
 
-import { Controller, Post, Body, Get, Query ,Req} from '@nestjs/common';
+import { Controller, Post,Get, Query ,Req} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Request } from 'express';
 
@@ -17,7 +17,6 @@ export class RoomController {
             // Ensure exactly 4 characters
             data:{
                 roomId,
-                createdBy:userId
             }
         });
 
