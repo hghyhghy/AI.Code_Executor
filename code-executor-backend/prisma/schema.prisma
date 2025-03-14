@@ -16,6 +16,7 @@ model User {
   folders   Folder[]
   sharedcode SharedCode[]
   comments Comment[]
+  profile Userprofle[]
 }
 
 model ExecutionHistory {
@@ -95,4 +96,18 @@ model Comment {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
    execution       ExecutionHistory  @relation(fields: [executionId], references: [id], onDelete: Cascade)
   @@index([content(length: 255)]) // Fix: Added length limit (255) for uniqueness
+}
+
+model Userprofle {
+  id Int  @id @default(autoincrement())
+  userId Int @unique
+  profilePicture String?
+  phoneNumber  String?
+  city String?
+  state String?
+  country String?
+  postcode String?
+  createdAt DateTime @default(now())
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
 }
