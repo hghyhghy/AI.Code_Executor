@@ -9,6 +9,7 @@ import { executeCode} from "@/lib/api";
 import { RxResume } from "react-icons/rx";
 import {Menu} from "@headlessui/react"
 import Cookies from "js-cookie";
+import { IoMdClose } from "react-icons/io";
 const socket = io("http://localhost:4000", {
   transports: ["websocket"],
 }); // Adjust backend URL as needed
@@ -340,12 +341,22 @@ return (
 
       {/* Run Button */}
       <div className="flex space-x-3">
-        <button
-          onClick={handleExecuteCode}
-          className="bg-blue-600 px-4 py-2 rounded-md flex items-center space-x-2 hover:bg-blue-700 transition  cursor-pointer"
-        >
-          <RxResume /> <span>Run</span>
-        </button>
+                <button
+              onClick={handleExecuteCode}
+              className="bg-blue-600 px-4 py-2 rounded-md flex items-center space-x-2 hover:bg-blue-700 transition cursor-pointer"
+            >
+              <RxResume /> 
+              <span>Run</span>
+            </button>
+
+            {/* End Session Button */}
+            <button
+              onClick={() => router.push("/execute")}
+              className="bg-gray-700  px-8 py-2 rounded-md flex items-center space-x-2 hover:bg-blue-700 transition cursor-pointer w-[20rem]"
+            >
+              <IoMdClose /> {/* Icon */}
+              <span>End Session</span> {/* Text */}
+            </button>
       </div>
     </div>
 
