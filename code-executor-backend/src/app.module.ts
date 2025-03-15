@@ -15,9 +15,10 @@ import { ExecutionHistoryModule } from './execution-history/execution-history.mo
 import { CommentModule } from './comment/comment.module';
 import { PublichistoryModule } from './publichistory/publichistory.module';
 import { UserProfileModule } from './user-profile/user-profile.module';
+import { ApiTokenModule } from './api-token/api-token.module';
 
 @Module({
-  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule, CommentModule, PublichistoryModule, UserProfileModule],
+  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule, CommentModule, PublichistoryModule, UserProfileModule, ApiTokenModule],
   controllers: [AppController],
   providers: [AppService, GeminiService, CollaborationGateway, CollaborationService,PrismaService],
 })
