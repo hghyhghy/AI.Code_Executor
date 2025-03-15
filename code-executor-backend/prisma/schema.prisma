@@ -16,7 +16,7 @@ model User {
   folders   Folder[]
   sharedcode SharedCode[]
   comments Comment[]
-  profile Userprofle[]
+  profile Userprofile[]
 }
 
 model ExecutionHistory {
@@ -98,16 +98,17 @@ model Comment {
   @@index([content(length: 255)]) // Fix: Added length limit (255) for uniqueness
 }
 
-model Userprofle {
-  id Int  @id @default(autoincrement())
-  userId Int @unique
-  profilePicture String?
-  phoneNumber  String?
-  city String?
-  state String?
-  country String?
-  postcode String?
-  createdAt DateTime @default(now())
+model Userprofile {
+  id             Int     @id @default(autoincrement())
+  userId         Int     @unique
+  firstName      String
+  lastName       String
+  email          String?
+  phoneNumber    String?
+  city           String?
+  state          String?
+  country        String?
+  postcode       String?
+  createdAt      DateTime @default(now())
   user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
 }
