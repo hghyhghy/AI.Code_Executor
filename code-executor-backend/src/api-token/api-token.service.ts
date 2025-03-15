@@ -28,7 +28,7 @@ export class ApiTokenService {
 
     async  deleteToken(userId:number){
         await this.prisma.apiToken.deleteMany({
-            where:{userId:Number(userId)}
+            where:{userId:userId}
         })
         return {message:"API token deleted successfully"}
     }
