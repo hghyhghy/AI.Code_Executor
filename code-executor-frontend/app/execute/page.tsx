@@ -322,7 +322,7 @@ async function fetchFolders(): Promise<{ id: number; name: string }[]> {
           >
             <FaBars size={24} />
           </button>
-          <h1 className="font-bold text-3xl mb-5">Online Code Editor</h1>
+          <h1 className="font-bold text-3xl mb-14">Code.Ai</h1>
 
         </div>
         <div className=" w-[65%] absolute left-0">
