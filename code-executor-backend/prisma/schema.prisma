@@ -17,6 +17,7 @@ model User {
   sharedcode SharedCode[]
   comments Comment[]
   profile Userprofile[]
+  apiToken ApiToken[]
 }
 
 model ExecutionHistory {
@@ -111,4 +112,12 @@ model Userprofile {
   postcode       String?
   createdAt      DateTime @default(now())
   user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ApiToken{
+  id Int @id @default(autoincrement())
+  userId Int @unique
+  token String @unique
+  createdAt DateTime @default(now())
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
