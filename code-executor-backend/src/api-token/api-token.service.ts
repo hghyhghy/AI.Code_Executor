@@ -33,4 +33,11 @@ export class ApiTokenService {
         return {message:"API token deleted successfully"}
     }
 
+    async  fetchApiToken(userId:number){
+        return await this.prisma.apiToken.findFirst({
+            where: { userId: userId },
+            orderBy:{createdAt:"desc"}
+        })
+    }
+
 }
