@@ -1,6 +1,8 @@
 
 # Project Title
 
+![Screenshot (102)](https://github.com/user-attachments/assets/74f06ab7-5f6c-4b16-8048-d1ff45585edd)
+
 A brief description of what this project does and who it's for
 
 a fullstack AI supported code editor , with code options for python,javascript,typescript, and go ... user also gets some features listed below 
