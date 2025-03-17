@@ -18,6 +18,7 @@ model User {
   comments Comment[]
   profile Userprofile[]
   apiToken ApiToken[]
+  subscription Subscription[]
 }
 
 model ExecutionHistory {
@@ -120,4 +121,13 @@ model ApiToken{
   token String @unique
   createdAt DateTime @default(now())
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model  Subscription{
+  id Int @id @default(autoincrement())
+  userId Int @unique
+  planType String
+  isActive Boolean @default(true)
+  subscribedAt DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
