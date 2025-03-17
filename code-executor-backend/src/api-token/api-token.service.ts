@@ -1,5 +1,5 @@
 
-import { Injectable } from '@nestjs/common';
+import { Injectable,ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { randomBytes } from "crypto";
 
@@ -8,15 +8,43 @@ export class ApiTokenService {
 
     constructor(private prisma:PrismaService){}
     
-    async  generateToken(userId:number){
-        const  token = randomBytes(32).toString("hex")
+    async generateToken(userId: number) {
+        const tokenHistoryCount = await this.prisma.apiToken.count({
+            where: { userId: userId }
+        });
 
-        return  await this.prisma.apiToken.upsert({
-            where:{userId:Number(userId)},
-            update:{token},
-            create:{userId,token}
-        })
+        if (tokenHistoryCount >= 2) {
+            throw new ForbiddenException('You have reached your API token generation limit (2). You cannot create more tokens.');
+        }
+
+        let token: string = ""
+        let isUnique = false;
+
+        // Ensure the token is unique
+        while (!isUnique) {
+            token = randomBytes(32).toString("hex");
+
+            const existingToken = await this.prisma.apiToken.findUnique({
+                where: { token: token }
+            });
+
+            if (!existingToken) {
+                isUnique = true;
+            }
+        }
+
+        try {
+            return await this.prisma.apiToken.create({
+                data: {
+                    userId,
+                    token
+                }
+            });
+        } catch (error) {
+            throw new InternalServerErrorException('Failed to generate API token. Please try again.');
+        }
     }
+
 
     async  validateToken(token:string){
         const apitoken =  await this.prisma.apiToken.findUnique({
