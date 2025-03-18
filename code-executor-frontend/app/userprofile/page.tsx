@@ -1,13 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { IoMdKey } from "react-icons/io";
 import { MdOutlineFileCopy } from "react-icons/md";
+import Cookies from "js-cookie";
+import axios from "axios";
+import { FaCrown } from "react-icons/fa";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -29,10 +31,55 @@ export default function ProfilePage() {
   const [showToolTip, setShowToolTip] = useState(false)
   const [apiToken, setApiToken] = useState("")
   const [tokenLoading, setTokenLoading] = useState(false)
+  const [tokenGenerationCount, setTokenGenerationCount] = useState(0)
+  const [isSubscribed, setIsSubscribed] = useState(false)
+  const [apiTokenExists, setApiTokenExists] = useState(false);
+  const [tokenCount, setTokenCount] = useState(0);
+  const token  =  Cookies.get("token")
+
+  useEffect(() => {
+    const fetchstatus = async() => {
+      try {
+        
+        const response =   await axios.get("http://localhost:3001/subscription/status",{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        });
+        setIsSubscribed(response.data.isSubscribed)
+        const tokenResponse =  await axios.get("http://localhost:3001/api-token/get",{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
+
+        if(tokenResponse.data.token){
+            setApiTokenExists(true)
+            setTokenCount(1)
+        }
+        else{
+          setApiTokenExists(false)
+          setTokenCount(0)
+        }
+      } catch (error) {
+        console.error("Failed to fetch status", error);
+
+      }
+    };
+
+    fetchstatus();
+  }, [])
+
 
   useEffect(() => {
     fetchProfile();
+    const  storedcount =  Cookies.get("tokenGenerationCount")
+    if(storedcount){
+      setTokenGenerationCount(parseInt(storedcount,10))
+    }
     fetchApitoken();
+
+    
   }, []);
 
   const fetchProfile = async () => {
@@ -65,9 +112,11 @@ export default function ProfilePage() {
       console.log("API Token Response:", data); // Debugging line
 
       if (data.token) {
-        setApiToken(data.token); // Correctly set the token
+        setApiToken(data.token); 
+        setTokenGenerationCount(1)// Correctly set the token
       } else {
-        setApiToken(""); // Set empty string if no token exists
+        setApiToken("");
+        setTokenGenerationCount(0) // Set empty string if no token exists
       }
     } catch (error) {
       setError("Error fetching token");
@@ -118,17 +167,21 @@ export default function ProfilePage() {
 
   // generate api token 
   const generateApitoken = async()=>{
+    if(!isSubscribed     && tokenCount >=2){
+          toast.error("API generation limit reached ")
+    }
     setTokenLoading(true)
     try {
-      const res  =  await fetch("http://localhost:3001/api-token/generate" ,  {
+       const response = await fetch("http://localhost:3001/api-token/generate" ,  {
         method:"POST",
         headers:{
           Authorization: `Bearer ${Cookies.get("token")}`,
         }
       });
-      if (!res.ok) throw new Error("Failed to generate token");
-      const data  =  await res.json()
+      const data  = await  response.json()
       setApiToken(data.token)
+      setApiTokenExists(true)
+      setTokenCount((prev) => prev+1)
       toast.success("API Token Generated!");
     } catch (err) {
       setError("Error generating token");
@@ -152,7 +205,7 @@ export default function ProfilePage() {
 
         setApiToken("")
         toast.success("API Token Deleted!");
-
+        
 
       } catch (err) {
         setError("Error deleting token");
@@ -388,9 +441,11 @@ export default function ProfilePage() {
     {/* Generate & Delete Buttons */}
     <div className="flex flex-row items-center justify-center space-x-4 py-4">
       <button
-        onClick={generateApitoken}
-        className="bg-blue-600 text-white px-6 py-2 text-sm rounded hover:bg-blue-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer uppercase"
-        disabled={tokenLoading}
+       onClick={generateApitoken}
+       className={`bg-blue-600 text-white px-6 py-2 text-sm rounded hover:bg-blue-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer uppercase ${
+         tokenGenerationCount >= 2 ? "opacity-50 cursor-not-allowed" : ""
+       }`}
+       disabled={!isSubscribed &&  tokenCount >= 2}
       >
         {tokenLoading ? (
           <span className="flex items-center">
@@ -418,6 +473,14 @@ export default function ProfilePage() {
           </div>
         )}
       </button>
+{/* 
+      <p className="mt-4 text-lg text-gray-700">
+                {isSubscribed
+                    ? "You have unlimited API tokens."
+                    : `You can generate up to 2 tokens. Current: ${tokenCount}`
+                }
+            </p> */}
+      
 
       <button
         onClick={deleteApitoken}
@@ -446,6 +509,12 @@ export default function ProfilePage() {
         ) : (
           "Revoke Token"
         )}
+      </button>
+      <button 
+      onClick={()=> router.push("/subscription")}
+      className=" bg-transparent border border-blue-500 rounded px-5 py-2 text-black font-semibold cursor-pointer flex flex-row gap-2">
+                    <FaCrown  className=' text-2xl
+                    ' /> Go  Pro 
       </button>
     </div>
 
