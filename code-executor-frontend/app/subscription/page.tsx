@@ -91,7 +91,8 @@ const SubscriptionPage =()=>{
                         color: "border-green-500"
                     }
                 ].map((plan) => (
-                    <div key={plan.name} className={`border ${plan.color} p-6 rounded-lg shadow-lg bg-white w-72 text-center flex flex-col h-96`}>
+                    <div key={plan.name} className={`border ${plan.color} p-6 rounded-lg shadow-lg bg-white w-72 text-center flex flex-col h-96 
+                    transition-transform duration-300 ease-in-out transform  hover:scale-110 hover:cursor-pointer`}>
                         <h3 className="text-xl font-semibold text-gray-800">{plan.name}</h3>
                         <p className="text-3xl font-bold text-gray-800 mt-2">
                             ${plan.price} <span className="text-gray-500 text-sm">/month</span>
