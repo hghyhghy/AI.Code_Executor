@@ -6,10 +6,13 @@ import { jwtDecode } from "jwt-decode"
 import Cookies from 'js-cookie';
 import { IoAddOutline, IoClose, IoMenu } from "react-icons/io5";
 import { useRouter } from 'next/navigation';
-import { FaChevronDown } from "react-icons/fa";
+import { FaChevronDown, FaCode, FaCrown } from "react-icons/fa";
 import { FaChevronUp } from "react-icons/fa";
 import { IoArrowDownSharp } from "react-icons/io5";
 import { IoArrowUpSharp } from "react-icons/io5";
+import { IoHomeOutline } from "react-icons/io5";
+import { CiSettings } from "react-icons/ci";
+import { MdAttachMoney } from 'react-icons/md';
 
 interface  ExecutionHistory {
     id:number,
@@ -173,24 +176,36 @@ export default  function  ExecutedCodes(){
           <ul className="space-y-3">
             <li
               onClick={() => router.push("/landing")}
-              className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105"
+              className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105 flex flex-row gap-2"
             >
-              Home
+              <IoHomeOutline className=' text-2xl' /> <h2 className=' text-1xl'>Home</h2>
             </li>
 
-            <li
-            onClick={() => router.push("/userprofile")}
-              className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105"
-            >
-              Settings
-            </li>
+
             <li
             onClick={() => router.push("/execute")}
-              className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105"
+              className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105 flex flex-row gap-2"
             >
+              <FaCode className=' text-2xl' />
+
               Code
             </li>
+            <li
+            onClick={() => router.push("/subscription")}
+              className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105 flex flex-row gap-2"
+            >
+              <FaCrown  className=' text-2xl
+              ' />
+              Go pro
+            </li>
+            <li
+            onClick={() => router.push("/userprofile")}
+              className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105 flex flex-row gap-2"
+            >
+              <CiSettings className=' text-2xl' />
 
+              Settings
+            </li>
             <li
               onClick={handlelogout}
               className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-red-500 hover:text-white transform hover:scale-105"
