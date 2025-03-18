@@ -16,9 +16,10 @@ import { CommentModule } from './comment/comment.module';
 import { PublichistoryModule } from './publichistory/publichistory.module';
 import { UserProfileModule } from './user-profile/user-profile.module';
 import { ApiTokenModule } from './api-token/api-token.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
-  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule, CommentModule, PublichistoryModule, UserProfileModule, ApiTokenModule],
+  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule, CommentModule, PublichistoryModule, UserProfileModule, ApiTokenModule, SubscriptionModule],
   controllers: [AppController],
   providers: [AppService, GeminiService, CollaborationGateway, CollaborationService,PrismaService],
 })
