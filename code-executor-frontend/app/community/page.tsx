@@ -12,8 +12,7 @@ import { IoArrowDownSharp } from "react-icons/io5";
 import { IoArrowUpSharp } from "react-icons/io5";
 import { IoHomeOutline } from "react-icons/io5";
 import { CiSettings } from "react-icons/ci";
-import { MdAttachMoney } from 'react-icons/md';
-
+import { FaGithub } from "react-icons/fa";
 interface  ExecutionHistory {
     id:number,
     code:string,
@@ -197,6 +196,14 @@ export default  function  ExecutedCodes(){
               <FaCrown  className=' text-2xl
               ' />
               Go pro
+            </li>
+            <li
+            onClick={() => router.push("/Github")}
+              className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105 flex flex-row gap-2"
+            >
+              <FaGithub   className=' text-2xl
+              ' />
+              Github
             </li>
             <li
             onClick={() => router.push("/userprofile")}
