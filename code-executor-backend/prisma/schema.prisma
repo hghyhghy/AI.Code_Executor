@@ -29,6 +29,8 @@ model ExecutionHistory {
   output    String   @db.Text()
   createdAt DateTime @default(now())
   comments Comment[]
+  fileId  Int?
+  file      File? @relation(fields: [fileId], references: [id], onDelete: Cascade)
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -50,6 +52,7 @@ model File {
   content  String   @db.Text()
   folderId Int
 
+  ExecutionHistory ExecutionHistory[]
   folder   Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   @@unique([name, folderId]) // Ensures file names are unique inside a folder
