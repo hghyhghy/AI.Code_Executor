@@ -177,17 +177,20 @@ export default  function  ExecutedCodes(){
             >
               Home
             </li>
+
             <li
             onClick={() => router.push("/userprofile")}
               className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105"
             >
-              Profile
-            </li>
-            <li
-              className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105"
-            >
               Settings
             </li>
+            <li
+            onClick={() => router.push("/execute")}
+              className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105"
+            >
+              Code
+            </li>
+
             <li
               onClick={handlelogout}
               className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-red-500 hover:text-white transform hover:scale-105"
