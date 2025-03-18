@@ -2,7 +2,6 @@
 
 import { Controller, Get, Post, Body, Req, UseGuards, Res } from '@nestjs/common';
 import { GithubService } from './github.service';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Request } from 'express';
 @Controller('github')
