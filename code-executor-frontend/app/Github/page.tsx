@@ -192,10 +192,18 @@ const GitHubPage= () =>{
 
     <button
         onClick={handlePush}
-        className="w-1/4 bg-blue-600 text-white py-3 rounded-md mt-6 hover:bg-blue-700 transition"
+        className="w-1/5 bg-blue-600 text-white py-3 rounded-md mt-6 hover:bg-blue-700 transition cursor-pointer "
         disabled={loading}
     >
-        {loading ? "Pushing..." : "Push to GitHub"}
+        {loading ? "Pushing..." : "Push"}
+    </button>
+    
+    <button
+        onClick={() => router.push("/community")}
+        className="w-1/5 bg-[#101828] text-white py-3 rounded-md mt-6 hover:bg-gray-800 transition ml-5 cursor-pointer"
+        disabled={loading}
+    >
+        Back 
     </button>
 </div>
 
