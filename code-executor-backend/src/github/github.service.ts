@@ -66,6 +66,71 @@ export class GithubService {
         return filesWithExecution
      }
 
+    async searchFiles(userId:number,searchQuery:string,languageQuery:string){
+        const files =  await this.prisma.file.findMany({
+            where:{
+                folder:{
+                    userId
+                },
+                name:searchQuery ?{
+                    contains:searchQuery,
+                }: undefined
+            },
+
+            select:{
+                    id:true,
+                    name:true,
+                    folder:{
+                        select:{
+                            name:true,
+                            user:{
+                                select:{
+                                    name:true,
+                                    email:true
+                                }
+                            }
+                        }
+                    }
+            }
+        })
+
+        const filesWithExecution = await Promise.all(
+            files.map(async (file) => {
+              const execution = await this.prisma.executionHistory.findFirst({
+                where: {
+                  fileId: file.id,
+                  language: languageQuery
+                    ? {
+                        equals: languageQuery, // Search by execution language
+                      }
+                    : undefined,
+                },
+                orderBy: { createdAt: 'desc' }, // Get latest execution
+                select: {
+                  language: true,
+                  createdAt: true,
+                },
+              });
+        
+              const executionCount = await this.prisma.executionHistory.count({
+                where: { fileId: file.id },
+              });
+        
+              return {
+                id: file.id,
+                name: file.name,
+                folder: file.folder.name,
+                username: file.folder.user.name,
+                email: file.folder.user.email,
+                executionCount: executionCount,
+                execution: execution || null,
+              };
+            })
+          );
+        
+          return filesWithExecution;
+    }
+
     async pushFileToGitHub(
         userId:number,
         pat:string,
