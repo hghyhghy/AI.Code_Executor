@@ -1,6 +1,6 @@
 
 
-import { Controller, Get, Post, Body, Req, UseGuards, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, UseGuards, Res, Query } from '@nestjs/common';
 import { GithubService } from './github.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Request } from 'express';
@@ -23,4 +23,17 @@ export class GithubController {
         const userId= (req.user as any)?.id
         return this.githubservice.pushFileToGitHub(userId,pat,owner,repo,filePath,commitMessage)
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("search")
+    async searchFiles(
+        @Req() req:Request,
+        @Query('filename') filename:string,
+
+    ) {
+        const userId = (req.user as any)?.id
+        return this.githubservice.searchFiles(userId,filename)
+    }
+
+    
 }
