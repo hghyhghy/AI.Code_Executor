@@ -2,7 +2,6 @@
 import { Injectable,HttpException,HttpStatus } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import axios from 'axios';
-import { Code } from 'typeorm';
 
 @Injectable()
 export class GithubService {
@@ -22,12 +21,18 @@ export class GithubService {
             name: true,
             folder: {
               select: {
-                name: true, // Folder Name
-              },
+                name: true, 
+                user:{
+                    select:{
+                        name:true,
+                        email:true
+                        // Folder Name
+                    },
+                },
             },
-            // Removed execution property as it does not exist in the type
-          },
-        });
+          }
+    }})
+    
 
         const filesWithExecution  =await Promise.all(
             files.map(async(file) => {
@@ -41,11 +46,17 @@ export class GithubService {
                     }
                     
                 });
+                const executionCount =  await this.prisma.executionHistory.count({
+                    where:{id:file.id}
+                })
 
                 return{
                     id:file.id,
                     name:file.name,
                     folder:file.folder,
+                    username:file.folder.user.name,
+                    email:file.folder.user.email,
+                    executionCount:executionCount,
                     execution:execution || null
                 }
 
