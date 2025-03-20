@@ -66,70 +66,74 @@ export class GithubService {
         return filesWithExecution
      }
 
-    async searchFiles(userId:number,searchQuery:string,languageQuery:string){
-        const files =  await this.prisma.file.findMany({
-            where:{
-                folder:{
+     async searchFiles(userId: number, searchQuery: string) {
+        const files = await this.prisma.file.findMany({
+            where: {
+                folder: {
                     userId
                 },
-                name:searchQuery ?{
-                    contains:searchQuery,
-                }: undefined
+                name: searchQuery
+                    ? {
+                        contains: searchQuery,
+                    }
+                    : undefined,
             },
-
-            select:{
-                    id:true,
-                    name:true,
-                    folder:{
-                        select:{
-                            name:true,
-                            user:{
-                                select:{
-                                    name:true,
-                                    email:true
-                                }
+            select: {
+                id: true,
+                name: true,
+                folder: {
+                    select: {
+                        name: true,
+                        user: {
+                            select: {
+                                name: true,
+                                email: true
                             }
                         }
                     }
+                }
             }
-        })
-
+        });
+    
         const filesWithExecution = await Promise.all(
             files.map(async (file) => {
-              const execution = await this.prisma.executionHistory.findFirst({
-                where: {
-                  fileId: file.id,
-                  language: languageQuery
-                    ? {
-                        equals: languageQuery, // Search by execution language
-                      }
-                    : undefined,
-                },
-                orderBy: { createdAt: 'desc' }, // Get latest execution
-                select: {
-                  language: true,
-                  createdAt: true,
-                },
-              });
-        
-              const executionCount = await this.prisma.executionHistory.count({
-                where: { fileId: file.id },
-              });
-        
-              return {
-                id: file.id,
-                name: file.name,
-                folder: file.folder.name,
-                username: file.folder.user.name,
-                email: file.folder.user.email,
-                executionCount: executionCount,
-                execution: execution || null,
-              };
+                const execution = await this.prisma.executionHistory.findFirst({
+                    where: {
+                        id: file.id,
+                    },
+                    orderBy: { createdAt: 'desc' }, // Get latest execution
+                    select: {
+                        language: true,
+                        createdAt: true,
+                    },
+                });
+    
+                const executionCount = await this.prisma.executionHistory.count({
+                    where: { id: file.id },
+                });
+
+    
+                return {
+                    id: file.id,
+                    name: file.name,
+                    folder: file.folder?.name || "N/A", // Handle null folder
+                    username: file.folder?.user?.name || "N/A", // Handle null user
+                    email: file.folder?.user?.email || "N/A", // Handle null email
+                    executionCount: executionCount,
+                    execution: execution
+                        ? {
+                            language: execution.language,
+                            createdAt: execution.createdAt,
+                        }
+                        : { language: "N/A", createdAt: "INVALID DATE" }, // Handle null execution
+                };
             })
-          );
-        
-          return filesWithExecution;
+        );
+        console.log(filesWithExecution)
+    
+        return filesWithExecution;
     }
+    
 
     async pushFileToGitHub(
         userId:number,
