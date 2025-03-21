@@ -18,10 +18,11 @@ import { UserProfileModule } from './user-profile/user-profile.module';
 import { ApiTokenModule } from './api-token/api-token.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { GithubModule } from './github/github.module';
+import { InterviewGeminiService } from './interview-gemini/interview-gemini.service';
 
 @Module({
   imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule, CommentModule, PublichistoryModule, UserProfileModule, ApiTokenModule, SubscriptionModule, GithubModule],
   controllers: [AppController],
-  providers: [AppService, GeminiService, CollaborationGateway, CollaborationService,PrismaService],
+  providers: [AppService, GeminiService, CollaborationGateway, CollaborationService,PrismaService, InterviewGeminiService],
 })
 export class AppModule {}
