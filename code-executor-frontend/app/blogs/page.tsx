@@ -4,6 +4,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Modal from "react-modal";
 import { LuTableOfContents } from "react-icons/lu";
+import { RxCross2 } from "react-icons/rx";
 
 export default function BlogsPage() {
   useEffect(() => {
@@ -131,6 +132,7 @@ export default function BlogsPage() {
             </button>
           </li>
         </ul>
+
       </aside>
 
       {/* Main Content */}
@@ -218,52 +220,63 @@ export default function BlogsPage() {
     </div>
   )}
 {modalIsOpen && (
-          <div id="modal-root">
-            <Modal
-              isOpen={modalIsOpen}
-              onRequestClose={closeModal}
-              className="fixed inset-0 flex items-center justify-center bg-[#FFFFFF] bg-opacity-50"
-            >
-              <div className="bg-white p-6 rounded-lg w-96">
-                <h2 className="text-lg font-semibold mb-2 text-blue-500">Edit Article</h2>
+  <div
+    className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-30 backdrop-blur-sm z-50"
+    onClick={closeModal} // Close when clicking outside
+  >
+    <div
+      className="bg-[#262626] p-6 rounded-lg w-[64rem] shadow-lg relative h-[39rem] ml-28"
+      onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking inside
+    >
 
-                {/* Update Title */}
-                <input
-                  type="text"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="border rounded p-2 w-full mb-2 text-gray-950"
-                />
-                <button onClick={updateTitle} className="bg-yellow-500 text-white px-4 py-2 rounded w-full mb-2">
-                  Update Title
-                </button>
+      <h2 className="text-lg font-semibold mb-2 text-gray-200">Manage your Article </h2>
 
-                {/* Update Content */}
-                <textarea
-                  value={newContent}
-                  onChange={(e) => setNewContent(e.target.value)}
-                  className="border rounded p-2 w-full mb-2 h-32 text-gray-800"
-                />
-                <button onClick={updateContent} className="bg-blue-500 text-white px-4 py-2 rounded w-full mb-2">
-                  Update Content
-                </button>
+      {/* Update Title */}
+      <div className=" flex flex-row gap-2 items-center justify-center">
 
-                {/* Delete & Close Buttons */}
-                <div className="flex justify-between mt-2">
-                  <button
-                    onClick={() => selectedArticle && deleteArticle(selectedArticle.id)}
-                    className="bg-red-500 text-white px-4 py-2 rounded"
-                  >
-                    Delete
-                  </button>
-                  <button onClick={closeModal} className="bg-gray-500 text-white px-4 py-2 rounded">
-                    Close
-                  </button>
-                </div>
-              </div>
-            </Modal>
+      <input
+        type="text"
+        value={newTitle}
+        onChange={(e) => setNewTitle(e.target.value)}
+        className="border  p-2 w-1/2 mb-2 text-gray-300 bg-[#393939] border-none outline-none  rounded-lg"
+        />
+      <button onClick={updateTitle} className="bg-blue-500 text-white px-2 py-2  w-1/9 mb-2 rounded-lg">
+        Update 
+      </button>
+
+        </div>
+        <button onClick={closeModal} className=" text-white px-4 py-2 rounded mb-1 absolute top-3 left-[60rem]">
+      <RxCross2 className=" text-2xl" />
+        </button>
+
+      {/* Update Content */}
+      <textarea
+        value={newContent}
+        onChange={(e) => setNewContent(e.target.value)}
+         className="border rounded p-2 w-full mb-2 h-[22rem] text-gray-400 outline-none border-none mt-5
+             scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-300"
+      />
+      <div className=" bg-[#181818] w-[64rem] -ml-6 p-5 rounded-md">
+
+      <button onClick={updateContent} className="bg-blue-500 text-white px-4 py-2 rounded w-1/5 mb-2  mt-3">
+        Update Content
+      </button>
+
+      {/* Delete & Close Buttons */}
+      <div className="flex justify-between mt-2">
+        <button
+          onClick={() => selectedArticle && deleteArticle(selectedArticle.id)}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+          >
+          Delete
+        </button>
           </div>
-        )}
+
+      </div>
+    </div>
+  </div>
+)}
+
 </div>
 
     </main>
