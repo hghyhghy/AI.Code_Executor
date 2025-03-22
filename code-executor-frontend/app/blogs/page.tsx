@@ -281,4 +281,4 @@ export default function BlogsPage() {
 
     </main>
   );
-}
+}   
