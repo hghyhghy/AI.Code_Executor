@@ -10,10 +10,10 @@ export class InterviewService {
         private  interviewgeminiservice:InterviewGeminiService
     ) {}
 
-    async generateAndSaveArticle(userId:number,topic:string){
+    async generateAndSaveArticle(userId:number,topic:string,wordLimit:number,language:string){
         try {
             
-            const content =  await this.interviewgeminiservice.generateBlog(topic)
+            const content =  await this.interviewgeminiservice.generateBlog(topic,wordLimit,language)
             // save to  the database
             const article  =  await this.prisma.interviewContent.create({
                 data:{
