@@ -13,6 +13,8 @@ import { IoArrowUpSharp } from "react-icons/io5";
 import { IoHomeOutline } from "react-icons/io5";
 import { CiSettings } from "react-icons/ci";
 import { FaGithub } from "react-icons/fa";
+import { ImBlogger } from "react-icons/im";
+
 interface  ExecutionHistory {
     id:number,
     code:string,
@@ -209,7 +211,7 @@ export default  function  ExecutedCodes(){
             onClick={() => router.push("/blogs")}
               className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 cursor-pointer transition-all duration-300 hover:bg-blue-500 hover:text-white transform hover:scale-105 flex flex-row gap-2"
             >
-              <FaGithub   className=' text-2xl
+              <ImBlogger    className=' text-2xl
               ' />
                 Blogs
              </li>
