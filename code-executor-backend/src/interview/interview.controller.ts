@@ -9,13 +9,20 @@ export class InterviewController {
 
     @UseGuards(JwtAuthGuard)
     @Post('generate')
-    async generatearticle(@Req() req:Request,  @Body('topic') topic:string){
+    async generatearticle(@Req() req:Request,  
+    @Body('topic') topic:string,
+    @Body('wordLimit') wordLimit:number,
+    @Body('language') language:string
+
+
+
+    ){
         const userId =  (req.user as any)?.id
-        return this.interviewService.generateAndSaveArticle(userId,topic)
+        return this.interviewService.generateAndSaveArticle(userId,topic,wordLimit,language)
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put('update/:articleId')
+    @Put('update/title/:articleId')
     async updateTitle(
         @Req() req:Request,
         @Param('articleId') articleId:string,
@@ -29,7 +36,7 @@ export class InterviewController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put('update/:articleId')
+    @Put('update/content/:articleId')
     async updateContent(
         @Req() req:Request,
         @Param('articleId') articleId:string,

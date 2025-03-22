@@ -13,16 +13,18 @@ export class InterviewGeminiService {
         this.genAi = new GoogleGenerativeAI(apikey)
     }
 
-    async generateBlog(interestedField:string) : Promise<string>{
+    async generateBlog(topic:string,wordLimit:number, language:string) : Promise<string>{
         try {
             
             const model =  this.genAi.getGenerativeModel({model:"gemini-1.5-pro-002"})
-            const prompt =  `Write a detailed and informative blog post on ${interestedField} for interview preparation. Include:
+            const prompt = `Write a detailed and informative blog post on "${topic}" for interview preparation in **${language}**. 
+            Include:
             - Key topics to focus on
-            - Common interview questions related to ${interestedField}
+            - Common interview questions related to "${topic}"
             - Expert tips and strategies for success
-            - Additional resources for further study.
-            Ensure the blog is structured professionally with headings and paragraphs.`;
+            - Additional resources for further study
+            Ensure the blog is structured professionally with headings and paragraphs.
+            The response should be within **${wordLimit} words**.`;
 
             const result =  await model.generateContent(prompt)
             const response = await result.response
