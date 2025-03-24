@@ -27,7 +27,12 @@ export class ShareService {
             }
         });
 
-        return { link: `http://localhost:3001/share/${sharedCode.id}` };
+        return { link: `http://localhost:3001/share/${sharedCode.id}`,
+            id: sharedCode.id,   // Include ID for direct retrieval
+            code: sharedCode.code,
+            language: sharedCode.language,
+            output: sharedCode.output,
+         };
     }
 
     // retrieve the code snippet from their ID
