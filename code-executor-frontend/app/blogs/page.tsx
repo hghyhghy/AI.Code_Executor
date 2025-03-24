@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import Modal from "react-modal";
@@ -20,6 +20,7 @@ export default function BlogsPage() {
   const [topic, setTopic] = useState("");
   const [wordLimit, setWordLimit] = useState <number>(300)
   const [language, setLanguage] = useState <string>("English")
+  const [showDeleteButton, setShowDeleteButton] = useState(false)
   const token = Cookies.get("token");
 
   useEffect(() => {
@@ -39,9 +40,18 @@ export default function BlogsPage() {
     setModalIsOpen(true);
   };
 
+  const handleRightClick=(e:React.MouseEvent,article:{id:number, title:string, content:string})=>{
+    e.preventDefault()
+    setSelectedArticle(article)
+    setShowDeleteButton(true)
+    setTimeout(() => setShowDeleteButton(false), 5000);
+
+  }
+
   const closeModal = () => {
     setModalIsOpen(false);
     setSelectedArticle(null);
+    setShowDeleteButton(false)
   };
 
   const generateArticleContent = () => {
@@ -201,7 +211,15 @@ export default function BlogsPage() {
     <div>
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Blogs</h1>
       {articles.map((article) => (
-        <div key={article.id} className="border rounded-lg p-4 mb-4 shadow-md w-full">
+        <div 
+        key={article.id} 
+        className="border rounded-lg p-4 mb-4 shadow-md w-full"
+        onContextMenu={(e) => {
+          e.preventDefault()
+          setSelectedArticle(article)
+          handleRightClick(e,article)
+        }}
+        >
           <div className="flex justify-between items-center">
             <div className="flex flex-row gap-2">
               <LuTableOfContents className="mt-1 text-lg text-blue-500" />
@@ -243,9 +261,17 @@ export default function BlogsPage() {
       <button onClick={updateTitle} className="bg-blue-500 text-white px-2 py-2  w-1/9 mb-2 rounded-lg">
         Update 
       </button>
+      <div className="flex justify-between ">
+        <button
+          onClick={() => selectedArticle && deleteArticle(selectedArticle.id)}
+          className="bg-red-500 text-white px-5 py-2  w-full rounded-full"
+          >
+          Delete
+        </button>
+          </div>
 
         </div>
-        <button onClick={closeModal} className=" text-white px-4 py-2 rounded mb-1 absolute top-3 left-[60rem]">
+        <button onClick={closeModal} className=" text-white px-4 py-2 rounded mb-1 absolute top-3 left-[60rem] cursor-pointer">
       <RxCross2 className=" text-2xl" />
         </button>
 
@@ -263,14 +289,9 @@ export default function BlogsPage() {
       </button>
 
       {/* Delete & Close Buttons */}
-      <div className="flex justify-between mt-2">
-        <button
-          onClick={() => selectedArticle && deleteArticle(selectedArticle.id)}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-          >
-          Delete
-        </button>
-          </div>
+
+
+
 
       </div>
     </div>
