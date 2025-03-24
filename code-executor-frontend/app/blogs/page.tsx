@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import Modal from "react-modal";
 import { LuTableOfContents } from "react-icons/lu";
 import { RxCross2 } from "react-icons/rx";
-
+import { useRouter } from "next/navigation";
 export default function BlogsPage() {
   useEffect(() => {
     Modal.setAppElement(document.body);
@@ -22,6 +22,7 @@ export default function BlogsPage() {
   const [language, setLanguage] = useState <string>("English")
   const [showDeleteButton, setShowDeleteButton] = useState(false)
   const token = Cookies.get("token");
+  const router= useRouter()
 
   useEffect(() => {
     if (!token) return;
@@ -200,6 +201,11 @@ export default function BlogsPage() {
   className="mt-4 bg-blue-500 text-white px-4 py-2 rounded w-full">
     Generate Content
   </button>
+  <button 
+  onClick={() => router.push('/community')}
+  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded w-full">
+    Go Back
+  </button> 
 </div>
 
 
