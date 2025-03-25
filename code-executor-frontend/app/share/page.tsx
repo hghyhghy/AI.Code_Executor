@@ -139,37 +139,74 @@ export default function ShareCode() {
                 </div>
             )}
 
-            {/* Code Input */}
-            <div className="w-full max-w-xl mt-6">
-                <textarea
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    placeholder="Enter your code..."
-                    className="w-full p-3 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800"
-                    rows={6}
-                />
-            </div>
 
-            {/* Language Selection & Output */}
-            <div className="w-full max-w-xl flex flex-col md:flex-row mt-4 gap-4">
-                <select
+            <div className=" w-1/2 p-5 bg-[#FFFFFF] rounded-md h-[33rem] mt-5 flex flex-row  gap-10">
+                <div className=" bg-[#AD87E4] w-1/2  p-5 rounded-md h-[30rem] " >
+                        <div className=" flex flex-col gap-2 mt-10">
+                            <h2 className=" w-1/12 bg-[#C1A4E7] rounded-full text-white items-center  justify-center flex">✓</h2>
+
+                            <p className=" font-normal  font-serif text-gray-100"> Lorem ipsum dolor sit amet   </p>
+                            <p className=" font-sans text-sm"> Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aspernatur, deleniti. </p>
+                        </div>
+                        <div className=" flex flex-col gap-2 mt-10">
+                            <h2 className="w-1/12 bg-[#C1A4E7] rounded-full text-white items-center  justify-center flex ">✓</h2>
+
+                            <p className=" font-normal  font-serif text-gray-100"> Lorem ipsum dolor sit amet   </p>
+                            <p className=" font-sans text-sm"> Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aspernatur, deleniti. </p>
+                        </div>
+                        <div className=" flex flex-col gap-2 mt-10">
+                            <h2 className=" w-1/12 bg-[#C1A4E7] rounded-full text-white items-center  justify-center flex">✓</h2>
+
+                            <p className=" font-normal  font-serif text-gray-100"> Lorem ipsum dolor sit amet   </p>
+                            <p className=" font-sans text-sm"> Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aspernatur, deleniti. </p>
+                        </div>
+                </div>
+                <div className=" flex flex-col">
+
+                    <div>
+                        <h4 className=" text-gray-700 mb-2">Code</h4>
+                        <textarea
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                        placeholder="Enter Your Code"
+                        className="w-[20rem] p-3 border rounded-md shadow-sm  text-gray-700 border-none outline-none  bg-gray-200"
+
+                         />
+
+                    </div>
+                    <div className="w-full max-w-xl flex flex-col md:flex-row mt-4 ">
+                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
                     className="w-full md:w-1/3 p-2 border rounded-md shadow-sm text-gray-800"
-                >
+                    >
                     <option value="JavaScript">JavaScript</option>
                     <option value="Python">Python</option>
                     <option value="Go">Go</option>
-                </select>
+                   </select>
 
+                    </div>
+                    <div className=" mt-5">
+
+                        
                 <textarea
                     value={output}
                     onChange={(e) => setOutput(e.target.value)}
                     placeholder="Output (optional)"
-                    className="w-full md:w-2/3 p-3 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800"
+                    className="w-[20rem] p-3 border rounded-md shadow-sm  text-gray-700 border-none outline-none  bg-gray-200"
+
                     rows={3}
                 />
+                    </div>
+
+                </div>
             </div>
+
+            {/* Code Input */}
+
+
+            {/* Language Selection & Output */}
+
 
             {/* Buttons */}
             <div className="flex flex-row gap-4 mt-6">
