@@ -8,6 +8,33 @@ export class ShareService {
 
     constructor(private prisma:PrismaService){}
 
+        // Function to count shared codes and return the username
+
+    async sharecCodeStatus(userId:number){
+        const user  = await this.prisma.user.findUnique({
+            where:{
+                id:userId
+            },
+            select:{
+                name:true,
+                _count:{
+                    select:{
+                        sharedcode:true
+                    }
+                }
+            }
+        });
+
+        if (!user){
+            throw  new NotFoundException(`User with ID ${userId} does not exist.`)
+        }
+
+        return {
+            username:user.name,
+            sharedCodeCount:user._count.sharedcode
+        }
+    }
+
     // nest js code for sharing ID  
     async  shareCode(userId:number,code:string,language:string,output?:string){
         const userExists  = await this.prisma.user.findUnique ({
