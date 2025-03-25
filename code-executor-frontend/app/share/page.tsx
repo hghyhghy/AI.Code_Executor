@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaRegCopy } from "react-icons/fa";
+import { IoShareOutline, IoLockClosedOutline, IoEyeOutline } from "react-icons/io5";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -71,17 +72,52 @@ export default function ShareCode() {
             <ToastContainer />
 
             {/* Header Section */}
-            <div className="w-full max-w-4xl bg-blue-500 text-white p-6 rounded-lg shadow-lg flex flex-col md:flex-row items-center">
+            <div className="w-full bg-blue-500 text-white p-6 rounded-lg shadow-lg flex flex-col md:flex-row items-center">
                 <div className="md:w-1/2 text-center md:text-left">
                     <h1 className="text-4xl font-bold">Share and Control</h1>
-                    <p className="text-xl mt-2 text-gray-200">Your Document</p>
+                    <p className="text-xl mt-2 text-gray-200">Your Code</p>
                     <h2 className="mt-4 text-lg font-semibold">
                         Welcome, <span className="bg-gray-800 px-4 py-2 rounded-md">{username}</span>
                     </h2>
-                    <p className="text-sm mt-2 text-gray-300">Shared Code Count: {sharedCount}</p>
+                    <h2 className="mt-4 text-lg font-semibold">
+                    Shared Code Count:<span className="bg-gray-800 px-6 py-2 rounded-md ml-2">{sharedCount}</span>
+                    </h2>
                 </div>
                 <div className="md:w-1/2 flex justify-center mt-4 md:mt-0">
-                    <Image src="/share.webp" width={250} height={250} alt="Share" />
+                    <Image src="/share.webp" width={450} height={550} alt="Share" />
+                </div>
+            </div>
+
+            {/* Features Section (Styled Like Screenshot) */}
+            <div className="flex flex-col md:flex-row gap-6 mt-8">
+                {/* Feature 1 */}
+                <div className="bg-white p-6 rounded-lg shadow-md text-center w-80">
+                    <div className="bg-blue-500 text-white p-4 rounded-full inline-block">
+                        <IoShareOutline size={30} />
+                    </div>
+                    <p className="text-gray-700 mt-4">
+                        Share your code and generate a unique link to distribute.
+                    </p>
+                </div>
+
+                {/* Feature 2 */}
+                <div className="bg-white p-6 rounded-lg shadow-md text-center w-80">
+                    <div className="bg-blue-500 text-white p-4 rounded-full inline-block">
+                        <IoLockClosedOutline size={30} />
+                    </div>
+                    <p className="text-gray-700 mt-4">
+                        Control who can view or modify your shared code.
+                    </p>
+                </div>
+
+                {/* Feature 3 */}
+                <div className="bg-white p-6 rounded-lg shadow-md text-center w-80">
+                    <div className="bg-blue-500 text-white p-4 rounded-full inline-block">
+                        <IoEyeOutline size={30} />
+                    </div>
+                    <p className="text-gray-700 mt-4">
+                        Track when someone views or interacts with your code.
+                    </p>
                 </div>
             </div>
 
@@ -102,12 +138,6 @@ export default function ShareCode() {
                     </button>
                 </div>
             )}
-
-            {/* Permission Info */}
-            <div className="w-full max-w-xl mt-4 bg-white p-4 rounded-lg shadow-md">
-                <h2 className="text-gray-700 font-medium">Permissions</h2>
-                <p className="text-gray-500 text-sm mt-1">🔒 Only people you add can open this link</p>
-            </div>
 
             {/* Code Input */}
             <div className="w-full max-w-xl mt-6">
