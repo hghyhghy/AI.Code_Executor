@@ -16,6 +16,12 @@ export class ShareController {
 
         return this.shareService.shareCode( userId,code,language,output)
     }
+    @UseGuards(JwtAuthGuard)
+    @Get('status')
+    async shareCodeStatus(@Req() req:Request){
+        const userId = (req.user as any)?.id;
+        return this.shareService.sharecCodeStatus(userId)
+    }
 
     @Get(":codeId")
     async getSharedCode(@Param("codeId")  codeId:string){
