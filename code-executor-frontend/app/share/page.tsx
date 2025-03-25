@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from "react";
 import axios from "axios";
@@ -8,112 +7,117 @@ import { FaRegCopy } from "react-icons/fa";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
-export  default  function ShareCode(){
-    const [code, setCode] = useState("")
-    const [language, setLanguage] = useState("javascript")
-    const [output, setOutput] = useState("")
-    const [shareLink, setShareLink] = useState("")
-    const router =  useRouter()
+export default function ShareCode() {
+    const [code, setCode] = useState("");
+    const [language, setLanguage] = useState("javascript");
+    const [output, setOutput] = useState("");
+    const [shareLink, setShareLink] = useState("");
+    const router = useRouter();
 
-    const handleShare =  async() => {
+    const handleShare = async () => {
         try {
-            
-            const token  = Cookies.get("token")
+            const token = Cookies.get("token");
             if (!token) {
                 toast.error("You must be logged in to share code.");
                 return;
-              }
+            }
 
-            const res=  await axios.post("http://localhost:3001/share/set", {
-                code,language,output
-            },
-        {headers:{ Authorization: `Bearer ${token}` }});
+            const res = await axios.post("http://localhost:3001/share/set", {
+                code, language, output
+            }, { headers: { Authorization: `Bearer ${token}` } });
 
-        setShareLink(res.data.link)
-        console.log(res.data.link)
-        toast.success("code shared successfully")
+            setShareLink(res.data.link);
+            toast.success("Code shared successfully");
         } catch (error) {
-            toast.error("Failed to share code ")
+            toast.error("Failed to share code");
         }
-    }
+    };
 
     const handleCopy = () => {
-        if(shareLink){
-            navigator.clipboard.writeText(shareLink)
-            toast.success("Link  copied to clipboard")
+        if (shareLink) {
+            navigator.clipboard.writeText(shareLink);
+            toast.success("Link copied to clipboard");
         }
-    }
-    
+    };
 
     return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
+            <ToastContainer />
+            
+            {/* Title */}
+            <h1 className="text-2xl font-semibold text-gray-900 mb-6">Share document</h1>
 
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-            <ToastContainer/>
-            <h1 className="text-3xl font-bold mb-6 text-black">Share Your Code</h1>
+            {/* Share Box */}
+            {shareLink && (
+                <div className="w-full max-w-xl bg-green-100 border border-green-300 p-4 rounded-lg flex items-center">
+                    <input
+                        type="text"
+                        value={shareLink}
+                        readOnly
+                        className="flex-1 p-2 bg-transparent text-gray-800 outline-none"
+                    />
+                    <button
+                        onClick={handleCopy}
+                        className="ml-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                    >
+                        Copy link
+                    </button>
+                </div>
+            )}
+
+            {/* Permissions */}
+            <div className="w-full max-w-xl mt-4 bg-white p-4 rounded-lg shadow">
+                <h2 className="text-gray-700 font-medium">Permission</h2>
+                <div className="flex items-center mt-2">
+                    <span className="text-gray-600">🔒 Restricted</span>
+                </div>
+                <p className="text-gray-500 text-sm mt-1">Only people you add can open this link</p>
+            </div>
+
+            {/* Code Input */}
             <textarea
-            value={code}
-            onChange={(e) =>  setCode(e.target.value)}
-            placeholder="Enter Your code To share"
-            className="w-full max-w-2xl p-3 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 text-black"
-            rows={6}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="Enter your code..."
+                className="w-full max-w-xl mt-4 p-3 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800"
+                rows={6}
             />
 
+            {/* Language Selection */}
             <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="mt-3 p-2 border rounded-md shadow-sm text-black"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="mt-3 p-2 border rounded-md shadow-sm text-gray-800"
             >
-
-        <option value="JavaScript">JavaScript</option>
-        <option value="Python">Python</option>
-        <option value="Go">Go</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="Python">Python</option>
+                <option value="Go">Go</option>
             </select>
 
-        <textarea
-        value={output}
-        onChange={(e) => setOutput(e.target.value)}
-        placeholder="Output (optional)"
-        className="w-full max-w-2xl p-3 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 mt-3 text-black"
-        rows={3}
-      />
+            {/* Output Input */}
+            <textarea
+                value={output}
+                onChange={(e) => setOutput(e.target.value)}
+                placeholder="Output (optional)"
+                className="w-full max-w-xl mt-3 p-3 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800"
+                rows={3}
+            />
 
-      <div className=" flex flex-row gap-2">
-
-
-      <button
-      onClick={handleShare}
-       className="mt-4 bg-blue-500 text-white px-5 py-2 rounded-md shadow-md hover:bg-blue-600 transition cursor-pointer"
-      >
-        share Code 
-      </button>
-      <button
-      onClick={() => router.push("/execute")}
-       className="mt-4 bg-blue-500 text-white px-5 py-2 rounded-md shadow-md hover:bg-blue-600 transition cursor-pointer"
-      >
-        Go Back
-      </button>
-      </div>
-
-      {shareLink && (
-
-        <div className="mt-4 p-3 bg-green-100 border border-green-400 rounded-md flex items-center justify-between w-full max-w-2xl">
-                      <p className="text-green-60 break-all ">Share this link:</p>
-                        <a 
-                        href={shareLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline break-all"
-                        >
-                            {shareLink}
-                        </a>
-                        <button
-                        onClick={handleCopy}
-                        className="ml-2 bg-gray-200 p-2 rounded-md hover:bg-gray-300 transition"
-                        >
-                            <FaRegCopy className="text-gray-700" />
-                        </button>
+            {/* Buttons */}
+            <div className="flex flex-row gap-3 mt-4">
+                <button
+                    onClick={handleShare}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700 transition"
+                >
+                    Share Code
+                </button>
+                <button
+                    onClick={() => router.push("/execute")}
+                    className="bg-gray-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-gray-600 transition"
+                >
+                    Go Back
+                </button>
+            </div>
         </div>
-      )}
-        </div>
-    )
+    );
 }
