@@ -1,5 +1,5 @@
 'use client';
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,7 +12,33 @@ export default function ShareCode() {
     const [language, setLanguage] = useState("javascript");
     const [output, setOutput] = useState("");
     const [shareLink, setShareLink] = useState("");
+    const [username, setUsername] = useState("")
+    const [sharedCount, setSharedCount] = useState(0)
     const router = useRouter();
+
+    useEffect(() => {
+        
+        const fetchUserDetails=async ()=>{
+                try {
+                    const token = Cookies.get("token")
+                    if(!token){
+                        toast.error("token  is not found ")
+                        return
+                    }
+                    const res=   await axios.get("http://localhost:3001/share/status",{
+                        headers:{
+                            Authorization:`Bearer ${token}`
+                        }
+                    })
+                    setUsername(res.data.username)
+                    setSharedCount(res.data.sharedCodeCount)
+                } catch (error) {
+                    console.error("Error fetching user details:", error);
+                    toast.error("Failed to load user details.");
+                }
+        };
+        fetchUserDetails()
+    },[]);
 
     const handleShare = async () => {
         try {
@@ -43,6 +69,12 @@ export default function ShareCode() {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
             <ToastContainer />
+            <div className="w-full max-w-xl bg-blue-100 border border-blue-300 p-4 rounded-lg text-center">
+                <h2 className="text-lg font-medium text-gray-800">
+                    Welcome, <span className="font-semibold">{username || "Guest"}</span>
+                </h2>
+                <p className="text-gray-600">Total Shared Codes: <span className="font-semibold">{sharedCount}</span></p>
+            </div>
             
             {/* Title */}
             <h1 className="text-2xl font-semibold text-gray-900 mb-6">Share document</h1>
