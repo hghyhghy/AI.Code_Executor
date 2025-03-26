@@ -20,9 +20,11 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { GithubModule } from './github/github.module';
 import { InterviewGeminiService } from './interview-gemini/interview-gemini.service';
 import { InterviewModule } from './interview/interview.module';
+import { ExamModule } from './exam/exam.module';
+import { ExamGeminiModule } from './exam-gemini/exam-gemini.module';
 
 @Module({
-  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule, CommentModule, PublichistoryModule, UserProfileModule, ApiTokenModule, SubscriptionModule, GithubModule, InterviewModule],
+  imports: [AuthModule, ExecuteModule, FolderModule, FileModule, ShareModule, CollaborationModule, ExecutionHistoryModule, CommentModule, PublichistoryModule, UserProfileModule, ApiTokenModule, SubscriptionModule, GithubModule, InterviewModule, ExamModule, ExamGeminiModule],
   controllers: [AppController],
   providers: [AppService, GeminiService, CollaborationGateway, CollaborationService,PrismaService, InterviewGeminiService],
 })
