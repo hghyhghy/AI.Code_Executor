@@ -41,3 +41,15 @@ body {
 .animate-slideUp {
   animation: slideUp 0.8s ease-out;
 }
+textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: #374151; /* Dark gray */
+  border-radius: 6px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background-color: #d1d5db; /* Light gray */
+}
