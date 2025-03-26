@@ -140,7 +140,7 @@ export default function ShareCode() {
             )}
 
 
-            <div className=" w-1/2 p-5 bg-[#FFFFFF] rounded-md h-[33rem] mt-5 flex flex-row  gap-10">
+            <div className=" w-1/2 p-5 bg-[#FFFFFF] rounded-md h-[38rem] mt-5 flex flex-row  gap-10">
                 <div className=" bg-[#AD87E4] w-1/2  p-5 rounded-md h-[30rem] " >
                         <div className=" flex flex-col gap-2 mt-10">
                             <h2 className=" w-1/12 bg-[#C1A4E7] rounded-full text-white items-center  justify-center flex">✓</h2>
@@ -174,32 +174,54 @@ export default function ShareCode() {
                          />
 
                     </div>
-                    <div className="w-full max-w-xl flex flex-col md:flex-row mt-4 ">
-                   <select
-                    value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                    className="w-full md:w-1/3 p-2 border rounded-md shadow-sm text-gray-800"
-                    >
-                    <option value="JavaScript">JavaScript</option>
-                    <option value="Python">Python</option>
-                    <option value="Go">Go</option>
-                   </select>
+{/* Language Selection Buttons */}
+<div className="w-full max-w-xl flex flex-row justify-center gap-4 mt-4">
+    {["JavaScript", "Python", "Go"].map((lang) => (
+        <button
+            key={lang}
+            onClick={() => setLanguage(lang)}
+            className={`px-6 py-2 font-medium rounded-lg shadow-md transition-all duration-300 cursor-pointer
+                ${language === lang 
+                    ? "bg-blue-600 text-white scale-110 shadow-lg cursor-pointer" 
+                    : "bg-gray-200 text-gray-800 hover:bg-blue-400 hover:text-white hover:scale-105"}
+            `}
+        >
+            {lang}
+        </button>
+    ))}
+</div>
 
-                    </div>
                     <div className=" mt-5">
 
+                    <h4 className=" text-gray-700 mb-2">Output</h4>
                         
                 <textarea
                     value={output}
                     onChange={(e) => setOutput(e.target.value)}
                     placeholder="Output (optional)"
-                    className="w-[20rem] p-3 border rounded-md shadow-sm  text-gray-700 border-none outline-none  bg-gray-200"
+                    className="w-[20rem] p-3 border rounded-md shadow-sm  text-gray-700 border-none outline-none  bg-gray-200 h-[13rem]"
 
                     rows={3}
                 />
                     </div>
+                    <div className="flex flex-col gap-4 mt-3">
+                <button
+                    onClick={handleShare}
+                    className="bg-blue-600 text-white px-6 py-2 rounded shadow-md hover:bg-blue-700 transition"
+                >
+                    Share Code
+                </button>
+                <button
+                    onClick={() => router.push("/execute")}
+                    className="bg-transparent border border-blue-600  text-blue-500 px-6 py-2 rounded shadow-md  transition cursor-pointer"
+                >
+                    Go Back
+                </button>
+            </div>
 
                 </div>
+
+                
             </div>
 
             {/* Code Input */}
@@ -209,20 +231,7 @@ export default function ShareCode() {
 
 
             {/* Buttons */}
-            <div className="flex flex-row gap-4 mt-6">
-                <button
-                    onClick={handleShare}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700 transition"
-                >
-                    Share Code
-                </button>
-                <button
-                    onClick={() => router.push("/execute")}
-                    className="bg-gray-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-gray-600 transition"
-                >
-                    Go Back
-                </button>
-            </div>
+
         </div>
     );
 }
