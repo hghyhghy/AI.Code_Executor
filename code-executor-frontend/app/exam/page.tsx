@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { GoArrowRight } from "react-icons/go";
@@ -14,8 +14,34 @@ export default function ExamPage() {
     const [examId, setExamId] = useState<number | null>(null);
     const [score, setScore] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
+    const [examResults, setExamResults] = useState <any[]>([])
 
     const token = Cookies.get("token");
+        // Fetch User Exam Results on Mount
+    useEffect(() => {
+
+        const fetchResults  =  async() => {
+            try {
+                
+                const response  =  await fetch('http://localhost:3001/exam/result' ,{
+                    method:"GET",
+                    headers:{
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                if(!response.ok) throw new Error("Failed to fetch results ")
+                const data = await response.json()
+            setExamResults(data)    
+            } catch (error) {
+                toast.error('Error fetching exam results ')
+            } 
+            finally{
+                setLoading(false)
+            }
+        };
+
+        fetchResults();
+    }, [token])
 
     const startExam = async (topic: string) => {
         setSelectedTopic(topic);
