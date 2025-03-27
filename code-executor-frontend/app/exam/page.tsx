@@ -66,43 +66,41 @@ export default function ExamPage() {
     return (
         <div className="min-h-screen bg-[#FFFFFF] flex">
             {/* Sidebar */}
-            <div className="w-64 bg-[#F6F6F6] shadow-md p-4">
-                <div className="flex flex-row  justify-between">
-
-                <h2 className="text-lg font-bold text-gray-800 mb-4">Available Topics</h2>
-                <span className=" bg-[#FFFFFF] rounded-full h-4 px-2 py-4 flex items-center justify-center font-bold text-1xl text-black">
-
-                <GoArrowRight />
-                </span>
-                </div>
-                <ul className="space-y-5">
-                    {topics.map((topic, index) => (
-                        <li key={index}>
-
-                            <button
-                                className={`w-full text-left p-3 rounded-lg transition-all h-[6rem] font-semibold text-blue-900 cursor-pointer ${
-                                    selectedTopic === topic
-                                        ? " text-white border border-gray-800 hover:bg-[#ECEDEA]"
-                                        : " text-black bg-[#F3F5F7]  border border-gray-800 hover:bg-[#ECEDEA]"
-                                }`}
-                                onClick={() => startExam(topic)}
-                            >
-                                <span className=" bg-gray-200 rounded-full px-2 py-2 mr-2">
-
-                              {index+1}
-                                </span>
-                                {topic} <br />
-                                <div className="mt-4 flex flex-row  justify-between">
-    <span className="flex items-center gap-2 text-sm bg-gray-200 rounded-lg px-1 py-1 text-black w-[9rem]">
-         Multiple Choice
-    </span>
-    <BsThreeDots  className="text-lg mt-2" />
-</div>
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+            <div className="w-64 bg-[#F6F6F6] shadow-md p-4 animate-fade-in">
+    <div className="flex flex-row justify-between">
+        <h2 className="text-lg font-bold text-gray-800 mb-4">Available Topics</h2>
+        <span className="bg-white rounded-full h-6 w-6 flex items-center justify-center font-bold text-xl text-black transition-transform duration-300 hover:rotate-90">
+            <GoArrowRight />
+        </span>
+    </div>
+    <ul className="space-y-5">
+        {topics.map((topic, index) => (
+            <li key={index}>
+                <button
+                    className={`w-full text-left p-3 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 h-[6rem] font-semibold text-blue-900 cursor-pointer shadow-md ${
+                        selectedTopic === topic
+                            ? "text-white border border-gray-800 bg-[#2B7FFF] hover:bg-[#1447E6]"
+                            : "text-black bg-[#F3F5F7] border border-gray-800 hover:bg-[#ECEDEA]"
+                    }`}
+                    onClick={() => startExam(topic)}
+                >
+                    <span className="bg-gray-200 rounded-full px-2 py-2 mr-2 inline-block transition-all duration-300 hover:bg-gray-300">
+                        {index + 1}
+                    </span>
+                    {topic}
+                    <br />
+                    <div className="mt-2 flex flex-row justify-between">
+                        <span className="flex items-center gap-2 text-sm bg-gray-200 rounded px-2 py-1 text-black w-[9rem] transition-all duration-300 hover:bg-gray-300">
+                            Multiple Choice
+                        </span>
+                        <BsThreeDots className="text-lg mt-2 transition-all duration-300 hover:text-gray-600 cursor-pointer" />
+                    </div>
+                </button>
+            </li>
+        ))}
+    </ul>
             </div>
+
 
             {/* Main Content */}
             <div className="flex-1 p-6">
