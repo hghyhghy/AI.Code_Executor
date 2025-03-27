@@ -130,27 +130,37 @@ export default function ExamPage() {
 
             {/* Main Content */}
             <div className="flex-1 p-6">
-                                {loading ? (
-                            <p className="text-gray-600 text-center">Loading exam results...</p>
-                        ) : examResults.length === 0 ? (
-                            <div className="bg-white p-6 rounded-lg shadow-lg text-center w-full max-w-lg mx-auto">
-                                <h2 className="text-2xl mb-4 font-bold text-gray-800">No Exam Records Found</h2>
-                                <p className="text-gray-600">Start an exam by selecting a topic from the sidebar.</p>
-                            </div>
-                        ) : (
-                            <div className="bg-white p-6 rounded-lg shadow-lg w-full mx-auto">
-                                <h2 className="text-xl font-bold text-gray-800 mb-4">Your Previous Exams</h2>
-                                <ul className="space-y-4">
-                                    {examResults.map((exam, index) => (
-                                        <li key={index} className="p-4 border rounded-lg shadow-md bg-gray-50">
-                                            <p className="font-medium text-gray-800">Topic: {exam.topic}</p>
-                                            <p className="text-gray-600">Score: <span className="font-bold">{exam.score}</span>/5</p>
-                                            <p className="text-gray-600 text-sm">Attempted on: {new Date(exam.date).toLocaleDateString()}</p>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+            {loading ? (
+    <p className="text-gray-600 text-center">Loading exam results...</p>
+) : examResults.length === 0 ? (
+    <div className="bg-white p-6 rounded-lg shadow-lg text-center w-full max-w-lg mx-auto">
+        <h2 className="text-2xl mb-4 font-bold text-gray-800">No Exam Records Found</h2>
+        <p className="text-gray-600">Start an exam by selecting a topic from the sidebar.</p>
+    </div>
+) : (
+    <div className="bg-white p-6 rounded-lg shadow-lg w-full mx-auto">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Your Previous Exams</h2>
+
+        {/* Grid Layout for Exam Results */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {examResults.map((exam, index) => (
+                <div key={index} className="p-4 border rounded-lg shadow-md bg-gray-50">
+                    <p className="font-medium text-gray-800">Topic: {exam.topic}</p>
+                    <p className="text-gray-600">
+                        Score: <span className="font-bold">{exam.score}</span>/5
+                    </p>
+                    <p className="text-gray-600">
+                        Answers: <span className="font-bold">{JSON.stringify(exam.answer)}</span>
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                        Attempted on: {new Date(exam.date).toLocaleDateString()}
+                    </p>
+                </div>
+            ))}
+        </div>
+    </div>
+)}
+
                 {!selectedTopic ? (
                     <div className="bg-white p-6 rounded-lg shadow-lg text-center w-full max-w-lg mx-auto">
                         <h2 className="text-2xl mb-4 font-bold text-gray-800">Choose a topic</h2>
