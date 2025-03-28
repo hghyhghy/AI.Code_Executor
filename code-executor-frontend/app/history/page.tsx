@@ -186,11 +186,11 @@ export default function HistoryPage() {
                             </button>
 
                             {/* Delete All Entries */}
-                            <button
+                            {/* <button
                             onClick={() => setShowModal(true)}
         className="px-4 py-2 flex items-center gap-2 bg-[#2F2078] text-white rounded disabled:bg-red-400 cursor-pointer">
          Delete All
-      </button>
+      </button> */}
 
       {/* Modal */}
       {showModal && (
@@ -267,7 +267,7 @@ export default function HistoryPage() {
 
         </div>
             
-        <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg text-black  border-b-neutral-950">
+        <div className="w-full  bg-white p-6 rounded-lg shadow-lg text-black  border-b-neutral-950">
 
 
           {/* Table Layout for Execution History */}
