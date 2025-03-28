@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import { GoArrowRight } from "react-icons/go";
 import Image from "next/image";
 import { LiaHashtagSolid, LiaTagSolid } from "react-icons/lia";
+import { AiOutlineDoubleLeft } from "react-icons/ai";
+import { AiOutlineDoubleRight } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
 
 const topics = [
@@ -169,13 +171,13 @@ export default function ExamPage() {
             {/* Main Content */}
             <div className="flex-1 p-6">
                 {selectedTopic ? (
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg mx-auto">
+                    <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full  h-[25rem] mx-auto relative top-30">
                         <h2 className="text-xl font-bold text-gray-800 mb-4">Topic: {selectedTopic}</h2>
                         {loading && <p className="text-gray-600">Loading Questions...</p>}
     
                         {!loading && questions.length > 0 && (
                             <div>
-                                <div className="mb-4 p-4 border rounded-lg">
+                                <div className="mb-4 p-4 border rounded-lg relative top-20">
                                     <p className="font-medium text-gray-800 mb-2">
                                         {currentQuestionIndex + 1}. {questions[currentQuestionIndex].question}
                                     </p>
@@ -183,8 +185,8 @@ export default function ExamPage() {
                                         {questions[currentQuestionIndex].options.map((option: string, optIndex: number) => (
                                             <button
                                                 key={optIndex}
-                                                className={`px-4 py-2 rounded-md text-sm border transition-all duration-200 text-blue-500 ${
-                                                    answers[currentQuestionIndex] === option ? "bg-green-500 text-white" : "bg-gray-200"
+                                                className={`px-4 py-2 rounded-md text-sm border transition-all duration-200 text-blue-500 cursor-pointer ${
+                                                    answers[currentQuestionIndex] === option ? "bg-blue-500 text-white" : "bg-gray-200"
                                                 }`}
                                                 onClick={() =>
                                                     setAnswers({ ...answers, [currentQuestionIndex]: option })
@@ -199,28 +201,30 @@ export default function ExamPage() {
 
                                 <div className=" flex justify-between  mt-4">
                                             <button
-                                            className={`px-4 py-2 rounded-md bg-gray-500 text-white ${                                            currentQuestionIndex === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-600"
+                                            className={`px-4 py-2 rounded-md bg-gray-500 text-white relative top-25 ${                                            currentQuestionIndex === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-600"
                                             }`}
                                             onClick={() => setCurrentQuestionIndex((prev) =>  prev-1)}
                                             disabled={currentQuestionIndex ===0}
 
 
                                             >
-                                                Prev
+                                              <AiOutlineDoubleLeft />
+
                                             </button>
 
                                             {currentQuestionIndex <  questions.length -1 ? (
                                                 <button
-                                                 className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
+                                                 className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 relative top-25"
                                                  onClick={() =>  setCurrentQuestionIndex((prev) =>  prev+1)}
                                                 >
-                                                    Next 
+                                                                                                  <AiOutlineDoubleRight />
+ 
 
                                                 </button>
                                             ) : (
 
                                                 <button
-                                                  className="px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-600"
+                                                  className="px-4 py-2 rounded-md bg-blue-900 text-white hover:bg-transparent hover:border border-blue-500 bo relative top-25 hover:text-blue-500 cursor-pointer"
                                                   onClick={submitAnswers}
                                                 >
                                                     Submit 
@@ -256,7 +260,7 @@ export default function ExamPage() {
                                     <div className="p-4 bg-[#F6F6F6] border w-[50rem] rounded-lg">
                                         <div className=" flex flex-row  justify-between">
                                             <div>
-                                                <p className="font-medium w-[5rem] text-gray-900 bg-blue-200 p-1 rounded-full flex flex-row gap-2">
+                                                <p className="font-medium  text-gray-900 bg-blue-200 px-2 py-1 rounded-full flex flex-row gap-2 mx-auto">
                                                     <LiaTagSolid className="mt-1 text-lg" />
                                                     {exam.topic}
                                                 </p>
