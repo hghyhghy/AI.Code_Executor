@@ -9,6 +9,8 @@ import { AiOutlineDoubleLeft } from "react-icons/ai";
 import { AiOutlineDoubleRight } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
 import { useRouter } from "next/navigation";
+import { BsSun, BsMoon } from "react-icons/bs";
+
 
 const topics = [
     "Web Development",
@@ -28,7 +30,12 @@ export default function ExamPage() {
     const [examResults, setExamResults] = useState<any[]>([]);
     const [dropdownIndex, setDropdownIndex] = useState<number | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+    const [isDarkMode, setIsDarkMode] = useState(false)
     const router  =  useRouter()
+
+    const toggledarkmode = () => {
+        setIsDarkMode(!isDarkMode)
+    }
     
 
     const token = Cookies.get("token");
@@ -133,15 +140,26 @@ export default function ExamPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FFFFFF] flex">
+        <div className={`${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"} min-h-screen flex`}>
             {/* Sidebar */}
-            <div className="w-64 bg-[#F6F6F6] shadow-md p-4 animate-fade-in">
+            <div className={`${isDarkMode ? "bg-gray-950 text-gray-300" : "bg-gray-100 text-black"} w-64 shadow-md p-4 animate-fade-in`}>
                 <div className="flex flex-row justify-between">
-                    <h2 className="text-lg font-bold text-gray-800 mb-4">Available Topics</h2>
-                    <span className="bg-white rounded-full h-6 w-6 flex items-center justify-center font-bold text-xl text-black transition-transform duration-300 hover:rotate-90">
-                        <GoArrowRight />
-                    </span>
+                    <h2 className="text-lg font-bold  mb-4">Available Topics</h2>
+                    <button
+                        onClick={toggledarkmode}
+                        className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-300 ease-in-out mb-6 cursor-pointer transform active:scale-90"
+                    >
+                        <span className="transition-all duration-300 ease-in-out">
+                            {isDarkMode ? (
+                                <BsSun className="text-gray-950 transition-opacity opacity-100" size={20} />
+                            ) : (
+                                <BsMoon className="text-gray-700 transition-opacity opacity-100" size={20} />
+                            )}
+                        </span>
+                    </button>
+
                 </div>
+
                 <ul className="space-y-5">
                     {topics.map((topic, index) => (
                         <li key={index}>
@@ -171,7 +189,7 @@ export default function ExamPage() {
 
                 <button 
                 onClick={() =>  router.push("/community")}
-                className=" bg-gray-800 mt-5 p-3 rounded w-full cursor-pointer">
+                className=" bg-gray-800 mt-5 p-3 rounded w-full cursor-pointer text-gray-300">
                     End Exam
                 </button>
             </div>
