@@ -8,6 +8,7 @@ import { LiaHashtagSolid, LiaTagSolid } from "react-icons/lia";
 import { AiOutlineDoubleLeft } from "react-icons/ai";
 import { AiOutlineDoubleRight } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
+import { useRouter } from "next/navigation";
 
 const topics = [
     "Web Development",
@@ -27,6 +28,7 @@ export default function ExamPage() {
     const [examResults, setExamResults] = useState<any[]>([]);
     const [dropdownIndex, setDropdownIndex] = useState<number | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+    const router  =  useRouter()
     
 
     const token = Cookies.get("token");
@@ -166,6 +168,12 @@ export default function ExamPage() {
                         </li>
                     ))}
                 </ul>
+
+                <button 
+                onClick={() =>  router.push("/community")}
+                className=" bg-gray-800 mt-5 p-3 rounded w-full cursor-pointer">
+                    End Exam
+                </button>
             </div>
     
             {/* Main Content */}
