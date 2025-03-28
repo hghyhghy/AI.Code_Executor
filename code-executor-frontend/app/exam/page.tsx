@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import { GoArrowRight } from "react-icons/go";
 import { BsThreeDots } from "react-icons/bs";
 import Image from "next/image";
+import { LiaHashtagSolid } from "react-icons/lia";
+import { LiaTagSolid } from "react-icons/lia";
 const topics = ["Web Development", "AI/Machine Learning", "Cybersecurity", "Data Science", "Cloud Computing"];
 
 export default function ExamPage() {
@@ -141,7 +143,7 @@ export default function ExamPage() {
     <div className="bg-white p-6 rounded-lg shadow-lg w-full mx-auto border-2 border-gray-300">
         <div>
 
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Your Previous Exams</h2>
+        <span className="text-sm font-bold text-gray-800 mb-4 flex flex-row gap-2 bg-[#f7f7f7] w-1/8 p-1 rounded-lg">  <LiaHashtagSolid className=" text-xl"  /> Multiple Choice  </span>
         </div>
 
         {/* Grid Layout for Exam Results */}
@@ -150,7 +152,7 @@ export default function ExamPage() {
                 <div key={index} className=" flex flex-row justify-between">
                     <div  className="p-4  rounded-lg  bg-[#F6F6F6] border w-[50rem]">
 
-                    <p className="font-medium text-gray-900  bg-blue-500 w-1/4  p-3 rounded-md">Topic:    {exam.topic}</p>
+                    <p className="font-medium text-gray-900  flex flex-row gap-2 bg-blue-200    w-1/9  p-1 rounded-full "><LiaTagSolid className=" mt-1 text-lg font-bold" />{exam.topic}</p>
                     <p className="text-gray-600">
                         Score: <span className="font-bold">{exam.score}</span>/5
                     </p>
