@@ -31,7 +31,35 @@ export default function ExamPage() {
     const [dropdownIndex, setDropdownIndex] = useState<number | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
     const [isDarkMode, setIsDarkMode] = useState(false)
+    const [tabSwitchCount, setTabSwitchCount] = useState(0)
+    const [examTerminated, setExamTerminated] = useState(false)
     const router  =  useRouter()
+
+    // handdle tab switching  
+    useEffect(() => {
+      
+    const  handleVisibiltyChange=()=>{
+        if(document.hidden){
+            setTabSwitchCount((prev) => prev+1)
+        }
+    }
+    document.addEventListener("visibilitychange",handleVisibiltyChange)
+    return()=> {
+        document.removeEventListener('visibilitychange',handleVisibiltyChange)
+    }
+    
+
+    }, [])
+
+    useEffect(() => {
+      if(tabSwitchCount  > 2){
+        setExamTerminated(true)
+        toast.error("Exam terminated due to multiple tab switching")
+
+      }
+    }, [tabSwitchCount])
+    
+    
 
     const toggledarkmode = () => {
         setIsDarkMode(!isDarkMode)
@@ -92,6 +120,7 @@ export default function ExamPage() {
         setSelectedTopic(topic);
         setLoading(true);
         setCurrentQuestionIndex(0)
+        setTabSwitchCount(0)
 
         try {
             const res = await fetch("http://localhost:3001/exam/generate", {
@@ -138,6 +167,20 @@ export default function ExamPage() {
             toast.error("Error submitting answers");
         }
     };
+    if (examTerminated) {
+        return (
+            <div className="h-screen flex flex-col items-center justify-center text-center">
+                <h2 className="text-2xl font-bold text-red-600">Exam Terminated</h2>
+                <p className="text-gray-600 mt-2">You switched tabs too many times. Please restart the exam.</p>
+                <button
+                    onClick={() => router.push("/community")}
+                    className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                >
+                    Restart Exam
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className={`${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"} min-h-screen flex`}>
@@ -151,9 +194,9 @@ export default function ExamPage() {
                     >
                         <span className="transition-all duration-300 ease-in-out">
                             {isDarkMode ? (
-                                <BsSun className="text-gray-950 transition-opacity opacity-100" size={20} />
+                                <BsSun className="text-gray-950 transition-opacity opacity-100" size={15} />
                             ) : (
-                                <BsMoon className="text-gray-700 transition-opacity opacity-100" size={20} />
+                                <BsMoon className="text-gray-700 transition-opacity opacity-100" size={15} />
                             )}
                         </span>
                     </button>
