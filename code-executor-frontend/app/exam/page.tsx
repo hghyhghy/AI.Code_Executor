@@ -33,8 +33,34 @@ export default function ExamPage() {
     const [isDarkMode, setIsDarkMode] = useState(false)
     const [tabSwitchCount, setTabSwitchCount] = useState(0)
     const [examTerminated, setExamTerminated] = useState(false)
+    const [timeLeft, setTimeLeft] = useState(10*60)
     const router  =  useRouter()
+    // Timer countdown logic
+    useEffect(() => {
 
+        if(selectedTopic && timeLeft > 0 ){
+            const timer =  setInterval(() => {
+                setTimeLeft((prev) => prev-1)
+            },1000);
+            return() =>  clearInterval(timer)
+        }
+        if(timeLeft ===0){
+            setExamTerminated(true)
+            router.push("/community")
+            toast.error("Oops ! time is up")
+
+        }
+    },[selectedTopic,timeLeft])
+
+    // formatting the time 
+    const formatTime=(seconds:number)=>{
+        const  minute  =  Math.floor(seconds/60)
+        const secs =  seconds%60
+        return `${minute}:${secs < 10 ? "0" : ""}${secs}`;
+
+
+    }
+    
     // handdle tab switching  
     useEffect(() => {
       
@@ -171,9 +197,9 @@ export default function ExamPage() {
         return (
             <div className="h-screen flex flex-col items-center justify-center text-center">
                 <h2 className="text-2xl font-bold text-red-600">Exam Terminated</h2>
-                <p className="text-gray-600 mt-2">You switched tabs too many times. Please restart the exam.</p>
+                {timeLeft === 0 ? "Time's up! Exam has ended." : "You switched tabs too many times."}
                 <button
-                    onClick={() => router.push("/community")}
+                    onClick={() => router.push("/exam")}
                     className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                 >
                     Restart Exam
@@ -187,7 +213,7 @@ export default function ExamPage() {
             {/* Sidebar */}
             <div className={`${isDarkMode ? "bg-gray-950 text-gray-300" : "bg-gray-100 text-black"} w-64 shadow-md p-4 animate-fade-in`}>
                 <div className="flex flex-row justify-between">
-                    <h2 className="text-lg font-bold  mb-4">Available Topics</h2>
+                    <h2 className="text-lg font-bold ">Available Topics</h2>
                     <button
                         onClick={toggledarkmode}
                         className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-300 ease-in-out mb-6 cursor-pointer transform active:scale-90"
@@ -202,6 +228,7 @@ export default function ExamPage() {
                     </button>
 
                 </div>
+                <p className="text-red-500 font-semibold ">Time Left: {formatTime(timeLeft)}</p>
 
                 <ul className="space-y-5">
                     {topics.map((topic, index) => (
@@ -270,7 +297,7 @@ export default function ExamPage() {
 
                                 <div className=" flex justify-between  mt-4">
                                             <button
-                                            className={`px-4 py-2 rounded-md bg-gray-500 text-white relative top-25 ${                                            currentQuestionIndex === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-600"
+                                            className={`px-4 py-2 rounded-md bg-gray-500 text-white relative top-25 cursor-pointer ${                                            currentQuestionIndex === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-600"
                                             }`}
                                             onClick={() => setCurrentQuestionIndex((prev) =>  prev-1)}
                                             disabled={currentQuestionIndex ===0}
@@ -283,7 +310,7 @@ export default function ExamPage() {
 
                                             {currentQuestionIndex <  questions.length -1 ? (
                                                 <button
-                                                 className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 relative top-25"
+                                                 className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 relative top-25 cursor-pointer"
                                                  onClick={() =>  setCurrentQuestionIndex((prev) =>  prev+1)}
                                                 >
                                                                                                   <AiOutlineDoubleRight />
