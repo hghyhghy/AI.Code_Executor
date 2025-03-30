@@ -8,13 +8,14 @@ import { IoAddOutline, IoClose, IoMenu } from "react-icons/io5";
 import { useRouter } from 'next/navigation';
 import { FaChevronDown, FaCode, FaCrown } from "react-icons/fa";
 import { FaChevronUp } from "react-icons/fa";
-import { IoArrowDownSharp } from "react-icons/io5";
-import { IoArrowUpSharp } from "react-icons/io5";
 import { IoHomeOutline } from "react-icons/io5";
 import { CiSettings } from "react-icons/ci";
 import { FaGithub } from "react-icons/fa";
 import { ImBlogger } from "react-icons/im";
 import { PiExam } from "react-icons/pi";
+import { FaRegHeart } from "react-icons/fa";
+import { BiDislike } from "react-icons/bi";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 interface  ExecutionHistory {
     id:number,
@@ -152,13 +153,13 @@ export default  function  ExecutedCodes(){
     return (
       <>
         {/* Page Header */}
-        <div className="bg-[#F9FAFB] text-blue-500 flex items-center justify-center p-4">
+        <div className="bg-[#F2F2F6] text-blue-500 flex items-center justify-center p-4">
           <h1 className="text-3xl font-extrabold text-blue-500">
             Community Executed Codes
           </h1>
         </div>
     
-        <div className="w-full min-h-screen bg-[#F9FAFB] p-6 flex flex-col items-center">
+        <div className="w-full min-h-screen bg-[#F2F2F6] p-6 flex flex-col items-center">
           {/* Sidebar Toggle Button */}
           <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -247,7 +248,7 @@ export default  function  ExecutedCodes(){
           <div className="w-full h-full flex flex-row  gap-6">
             {/* Executed Code Card */}
             {executions.length > 0 && (
-              <div className="w-full bg-white h-full  shadow-md rounded-lg p-6 border">
+              <div className="w-[120rem] bg-white h-[25rem]  shadow-md rounded-lg p-6 border">
                 <h2 className="text-lg font-semibold text-gray-700 mb-3">
                   Executed Code
                 </h2>
@@ -295,48 +296,55 @@ export default  function  ExecutedCodes(){
             )}
     
             {/* Comments Section */}
-            <div className="w-full bg-white shadow-md rounded-lg p-6 border">
+            <div className="w-1/2  rounded-lg p-6 ">
               <h2 className="text-lg font-semibold text-gray-700 mb-3">Comments</h2>
     
               {comments.length === 0 ? (
+                <div className=' bg-white rounded-2xl  p-3'>
+
                 <p className="text-gray-500 italic">
                   No comments yet. Be the first to add one!
                 </p>
+                </div>
               ) : (
                 <div className="space-y-3">
                   {comments.map((comment) => (
                     <div
                       key={comment.id}
-                      className="bg-white p-3 rounded-md border border-blue-500 hover:bg-gray-100 cursor-pointer"
+                      className="bg-white p-3 rounded-2xl   cursor-pointer"
                     >
+                      <div className=' flex flex-row gap-3'>
+
                       <p className="text-gray-800">
-                        <span className="font-semibold text-blue-600">
+                        <span className="font-semibold text-blue-600 uppercase">
                           {comment.user?.name || "unknown"}
                         </span>
                       </p>
-                      <p className="text-gray-800">{comment.content}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs mt-1 text-gray-500">
                         {new Date(comment.createdAt).toLocaleString()}
                       </p>
+                      </div>
+                      <p className="text-gray-800">{comment.content}</p>
+
     
                       <div className="flex items-center gap-3 mt-2">
                         <button
                           onClick={() => handleLikeComment(comment.id)}
-                          className="flex items-center gap-1 px-2 py-1  text-blue-500 bg-gray-200 text-xs rounded-full transition cursor-pointer"
+                          className="flex items-center gap-1 px-2 py-1  text-blue-500  text-xs rounded-full transition cursor-pointer"
                         >
-                         <IoArrowUpSharp /> {comment.likes}
+                         <FaRegHeart className=' text-lg'  /> {comment.likes}
                         </button>
                         <button
                           onClick={() => handleDislikeComment(comment.id)}
-                          className="flex items-center gap-1 px-2 py-1 bg-gray-200 text-blue-500 text-xs rounded-full transition cursor-pointer"
+                          className="flex items-center gap-1 px-2 py-1 text-blue-500 text-xs rounded-full transition cursor-pointer"
                         >
-                            <IoArrowDownSharp />{comment.dislikes}
+                            <BiDislike className=' text-lg' />{comment.dislikes}
                         </button>
                         <button
                           onClick={() => handleDeleteComment(comment.id)}
-                          className="px-2 py-1 bg-[#2F2078] cursor-pointer text-white text-xs rounded transition"
+                          className="px-2 py-1 cursor-pointer text-blue-500 text-xs rounded transition flex items-end justify-end"
                         >
-                          Delete
+                          <FaDeleteLeft className=' text-lg relative left-[12rem]' />
                         </button>
                       </div>
                     </div>
