@@ -6,12 +6,12 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-
 model User {
   id        Int       @id @default(autoincrement())
   name      String    @unique
   email     String    @unique
   password  String
+
   executionHistories ExecutionHistory[]
   folders   Folder[]
   sharedcode SharedCode[]
@@ -22,6 +22,10 @@ model User {
   interviewcontent InterviewContent[]
   exam Exam[]
   answer ExamAnswer[]
+  studentexam StudentExam[] @relation(name: "StudentUser")
+  assignedExams StudentExam[] @relation(name: "AssignedAdmin")
+
+  StudentExamAnswer StudentExamAnswer[]
 }
 
 model ExecutionHistory {
@@ -172,4 +176,31 @@ model ExamAnswer{
   exam      Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+}
+
+model StudentExam {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  assignedBy  Int
+  topic       String
+  questions   Json
+  status      String   @default("pending") // "pending", "completed", "evaluated"
+  createdAt   DateTime @default(now())
+  answers     StudentExamAnswer[]
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, name: "StudentUser")
+  admin       User     @relation(fields: [assignedBy], references: [id], onDelete: Cascade, name: "AssignedAdmin")
+}
+
+model StudentExamAnswer {
+  id          Int      @id @default(autoincrement())
+  studentExamId Int
+  userId      Int
+  answers     Json
+  score       Int?
+  evaluated   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  studentExam StudentExam @relation(fields: [studentExamId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
