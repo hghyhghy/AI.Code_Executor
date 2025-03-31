@@ -34,7 +34,9 @@ interface Comment {
       name:string
     },
     likes:number,
-    dislikes:number
+    dislikes:number,
+    replies?: Comment[];
+
 }
 
 interface DecodedToken {
@@ -53,6 +55,8 @@ export default  function  ExecutedCodes(){
     const [userId, setUserId] = useState<number | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const [showOutPut, setShowOutPut] = useState(false)
+    const [replyingTo, setReplyingTo] = useState<number | null>(null);
+    const [replyText, setReplyText] = useState<{ [key: number]: string }>({});
     useEffect(() => {
       const token = typeof window !== "undefined" ? Cookies.get("token") : null;
       if (token) {
@@ -97,24 +101,68 @@ export default  function  ExecutedCodes(){
         .then((res) => setComments(res.data))
         .catch((err) => console.error("Error fetching comments:", err))
     }, [currentIndex,executions])
-    
-      // Handle comment submission
 
+    // handle comment submission
     const handlePostComment = async ()=> {
-        if (!newComment.trim()) return
-        const executionId  =  executions[currentIndex].id
+      if (!newComment.trim()) return
+      const executionId  =  executions[currentIndex].id
 
+      try {
+          const res  =  await axiosInstance.post(`/comment/${executionId}`, {content:newComment})
+          if (res.status === 200||  res.status === 201 ){
+              setComments([...comments, res.data])
+              setNewComment("")
+              setShowCommentBox(false)
+          }
+      } catch (err) {
+          console.error("Error posting comment:", err);
+      }
+  }
+    
+      // Handle reply submission
+
+      const handlePostReply = async (parentId: number) => {
+        if (!replyText[parentId]?.trim()) return;
+    
+        const executionId = executions[currentIndex].id;
+    
         try {
-            const res  =  await axiosInstance.post(`/comment/${executionId}`, {content:newComment})
-            if (res.status === 200||  res.status === 201 ){
-                setComments([...comments, res.data])
-                setNewComment("")
-                setShowCommentBox(false)
+            const response = await fetch(`http://localhost:3001/comment/reply/${executionId}/${parentId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`, // Include token if required
+                },
+                body: JSON.stringify({ content: replyText[parentId] }),
+            });
+    
+            if (!response.ok) {
+                throw new Error("Failed to post reply");
             }
+    
+            const newReply = await response.json();
+    
+            // Clear reply input after posting
+            setReplyText((prev) => ({ ...prev, [parentId]: "" }));
+            setReplyingTo(null);
+    
+            // Correctly update the comment state by nesting replies
+            setComments((prevComments) =>
+                prevComments.map((comment) =>
+                    comment.id === parentId
+                        ? {
+                              ...comment,
+                              replies: [...(comment.replies || []), newReply], // Add new reply inside replies array
+                          }
+                        : comment
+                )
+            );
         } catch (err) {
-            console.error("Error posting comment:", err);
+            console.error("Error posting reply:", err);
         }
-    }
+    };
+    
+      
 
     // hnadle deletion  functionality 
     const handleDeleteComment = async(commentId:number)=>{
@@ -308,47 +356,76 @@ export default  function  ExecutedCodes(){
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {comments.map((comment) => (
-                    <div
-                      key={comment.id}
-                      className="bg-white p-3 rounded-2xl   cursor-pointer"
-                    >
-                      <div className=' flex flex-row gap-3'>
-
+                {comments.map((comment) => (
+                  <div key={comment.id} className="bg-white p-3 rounded-2xl cursor-pointer">
+                    {/* Comment Info */}
+                    <div className="flex flex-row gap-3">
                       <p className="text-gray-800">
                         <span className="font-semibold text-blue-600 uppercase">
-                          {comment.user?.name || "unknown"}
+                          {comment.user?.name || "Unknown"}
                         </span>
                       </p>
                       <p className="text-xs mt-1 text-gray-500">
                         {new Date(comment.createdAt).toLocaleString()}
                       </p>
-                      </div>
-                      <p className="text-gray-800">{comment.content}</p>
-
-    
-                      <div className="flex items-center gap-3 mt-2">
-                        <button
-                          onClick={() => handleLikeComment(comment.id)}
-                          className="flex items-center gap-1 px-2 py-1  text-blue-500  text-xs rounded-full transition cursor-pointer"
-                        >
-                         <FaRegHeart className=' text-lg'  /> {comment.likes}
-                        </button>
-                        <button
-                          onClick={() => handleDislikeComment(comment.id)}
-                          className="flex items-center gap-1 px-2 py-1 text-blue-500 text-xs rounded-full transition cursor-pointer"
-                        >
-                            <BiDislike className=' text-lg' />{comment.dislikes}
-                        </button>
-                        <button
-                          onClick={() => handleDeleteComment(comment.id)}
-                          className="px-2 py-1 cursor-pointer text-blue-500 text-xs rounded transition flex items-end justify-end"
-                        >
-                          <FaDeleteLeft className=' text-lg relative left-[12rem]' />
-                        </button>
-                      </div>
                     </div>
-                  ))}
+
+                    {/* Comment Content */}
+                    <p className="text-gray-800">{comment.content}</p>
+
+                    {/* Actions: Like, Dislike, Delete, Reply */}
+                    <div className="flex items-center gap-3 mt-2">
+                      <button onClick={() => handleLikeComment(comment.id)} className="flex items-center gap-1 px-2 py-1 text-blue-500 text-xs rounded-full cursor-pointer">
+                        <FaRegHeart className="text-lg" /> {comment.likes}
+                      </button>
+                      <button onClick={() => handleDislikeComment(comment.id)} className="flex items-center gap-1 px-2 py-1 text-blue-500 text-xs rounded-full cursor-pointer">
+                        <BiDislike className="text-lg" /> {comment.dislikes}
+                      </button>
+                      <button onClick={() => handleDeleteComment(comment.id)} className="px-2 py-1 cursor-pointer text-blue-500 text-xs rounded transition flex items-end justify-end">
+                        <FaDeleteLeft className="text-lg relative left-[12rem]" />
+                      </button>
+                      <button
+                        onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                        className="px-2 py-1 text-blue-500 text-xs rounded cursor-pointer"
+                      >
+                        <IoAddOutline className="text-sm" /> Reply
+                      </button>
+                    </div>
+
+                    {/* Reply Input (Shown when user clicks 'Reply') */}
+                    {replyingTo === comment.id && (
+                      <div className="mt-2">
+                        <textarea
+                          className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                          placeholder="Write a reply..."
+                          value={replyText[comment.id] || ""}
+                          onChange={(e) => setReplyText((prev) => ({ ...prev, [comment.id]: e.target.value }))}
+                        />
+                        <button
+                          onClick={() => handlePostReply(comment.id)}
+                          className="mt-2 w-full bg-blue-500 text-white font-medium px-4 py-2 rounded-md hover:bg-green-700 transition"
+                        >
+                          Post Reply
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Display Replies */}
+                    {comment.replies && comment.replies.length > 0 && (
+                      <div className="ml-6 mt-3 border-l-2 border-gray-300 pl-4 space-y-2">
+                        {comment.replies.map((reply) => (
+                          <div key={reply.id} className="bg-gray-100 p-2 rounded-md">
+                            <p className="text-xs text-gray-500">
+                              <span className="font-semibold text-blue-600">{reply.user?.name || "Unknown"}</span>{" "}
+                              - {new Date(reply.createdAt).toLocaleString()}
+                            </p>
+                            <p className="text-gray-800">{reply.content}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
                 </div>
               )}
     
