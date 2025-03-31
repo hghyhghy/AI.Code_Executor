@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Delete, Param, Body, Req, UseGuards,Patch } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Req, UseGuards,Patch, BadRequestException } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
@@ -24,9 +24,30 @@ export class CommentController {
                 userId,
                 Number(executionId),
                 body.content,
-                body.parentId
             )
 
+    }
+
+    
+    @UseGuards(JwtAuthGuard)
+    @Post('reply/:executionId/:parentId')
+    async addReply(
+        @Param('executionId') executionId: string,
+        @Param('parentId',) parentId: string,
+        @Body() body: { content: string },
+        @Req() req: Request
+    ) {
+        const userId = (req.user as any)?.id
+        const execution =  parseInt(executionId,10)
+        const parent =  parseInt(parentId,10)
+
+    
+        if (!body.content.trim()) {
+            throw new BadRequestException('Reply content cannot be empty');
+        }
+    
+        const reply = await this.commentservice.addreply(userId, execution, body.content, parent);
+        return reply;
     }
 
     @UseGuards(JwtAuthGuard)
