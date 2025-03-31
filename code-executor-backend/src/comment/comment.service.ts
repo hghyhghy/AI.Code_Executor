@@ -7,31 +7,40 @@ export class CommentService {
     constructor(private  prisma:PrismaService){}
 
     async  getCommentsByCode(executionId:number){
-        return this.prisma.comment.findMany({
 
-            where:{
-                executionId:executionId
-            },
+        return this.prisma.comment.findMany({
+            where:{executionId},
             include:{
                 user:{
-                    select:{
-                        name:true
-                    }
-                }
-            },
-            orderBy:{
-                createdAt:"desc"
+                    select:
+                    {
+                         name:true
+                     }},
+                replies:{include:{
+                    user:{
+                        select:{
+                            name:true
+                        }
+                    },
+                    
+                    
+                }  ,
+                orderBy:{createdAt:'asc'}
             }
+            },
+
+            orderBy:{createdAt:'desc'}
         })
     }
 
-    async addComment(userId:number,executionId:number,content:string){
+    async addComment(userId:number,executionId:number,content:string,parentId?:number){
         return this.prisma.comment.create({
 
             data:{
                 userId:Number(userId),
                 executionId:executionId,
-                content
+                content,
+                parentId:parentId ?? null
             }
         })
     }
@@ -40,10 +49,15 @@ export class CommentService {
         const comment  =  await this.prisma.comment.findUnique({
             where:{
                 id:commentId
+            }, include:{
+                replies:true
             }
         })
         if (!comment) throw new NotFoundException('Comment not found');
         if (comment.userId !== userId) throw new NotFoundException('Unauthorized to delete this comment');
+        await this.prisma.comment.deleteMany({
+            where:{parentId:commentId}
+        })
         return this.prisma.comment.delete({
             where:{
                 id:commentId
