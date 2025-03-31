@@ -9,38 +9,43 @@ export class CommentService {
     async  getCommentsByCode(executionId:number){
 
         return this.prisma.comment.findMany({
-            where:{executionId},
-            include:{
-                user:{
-                    select:
-                    {
-                         name:true
-                     }},
-                replies:{include:{
-                    user:{
-                        select:{
-                            name:true
+            where: { executionId, parentId: null }, // Ensure only top-level comments are fetched
+            include: {
+                user: { select: { name: true } },
+                replies: {
+                    include: {
+                        user: { select: { name: true } },
+                        replies: {  // Fetch nested replies
+                            include: {
+                                user: { select: { name: true } }
+                            }
                         }
                     },
-                    
-                    
-                }  ,
-                orderBy:{createdAt:'asc'}
-            }
+                    orderBy: { createdAt: 'asc' }
+                }
             },
-
-            orderBy:{createdAt:'desc'}
-        })
+            orderBy: { createdAt: 'desc' }
+        });
     }
 
-    async addComment(userId:number,executionId:number,content:string,parentId?:number){
+    async addComment(userId:number,executionId:number,content:string){
         return this.prisma.comment.create({
 
             data:{
                 userId:Number(userId),
                 executionId:executionId,
                 content,
-                parentId:parentId ?? null
+            }
+        })
+    }
+
+    async addreply(userId:number,executionId:number,content:string,parentId?:number){
+        return this.prisma.comment.create({
+            data:{
+                userId:Number(userId),
+                executionId:executionId,
+                content,
+                parentId:parentId??null
             }
         })
     }
