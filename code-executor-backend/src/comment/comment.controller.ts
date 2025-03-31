@@ -17,13 +17,14 @@ export class CommentController {
 
     @UseGuards(JwtAuthGuard)
     @Post(':executionId')
-    async  addComment(@Req() req:Request ,  @Param('executionId') executionId:string, @Body() body:{content:string}){
+    async  addComment(@Req() req:Request ,  @Param('executionId') executionId:string, @Body() body:{content:string, parentId?:number}){
     const userId =  (req.user as any) ?.id
 
         return this.commentservice.addComment(
                 userId,
                 Number(executionId),
-                body.content
+                body.content,
+                body.parentId
             )
 
     }
